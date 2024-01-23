@@ -89,7 +89,8 @@ export const Editor = () => {
 
     const VideoPlayer = ({isUnplayable}: { isUnplayable: boolean }) => {
         return (
-            <div className={`relative flex justify-center items-center h-90 max-h-90 ${isUnplayable ? 'border border-white' : ''} rounded-md`}>
+            <div
+                className={`relative flex justify-center items-center h-90 max-h-90 ${isUnplayable ? 'border border-white' : ''} rounded-md`}>
                 <video className={"w-full"} ref={videoRef} controls src={sourceVideoURL!}/>
                 {isUnplayable && (
                     <>
@@ -108,14 +109,15 @@ export const Editor = () => {
         <div>
             {video && isLoaded ? (
                 <div>
-                    <Tabs defaultValue="complete" className="flex-1">
+                    <Tabs defaultValue={"complete"} className={"flex-1"}>
                         <div className="container h-full py-6">
                             <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
                                 <div className="hidden flex-col space-y-4 sm:flex md:order-2">
                                     <div className="grid gap-2">
                                         <HoverCard openDelay={200}>
                                             <HoverCardTrigger asChild>
-                      <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <span
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         Mode
                       </span>
                                             </HoverCardTrigger>
@@ -193,15 +195,28 @@ export const Editor = () => {
                                                     ></rect>
                                                 </svg>
                                             </TabsTrigger>
+                                            <TabsTrigger value="insert">
+                                                <span className="sr-only">Insert</span>
+                                            </TabsTrigger>
+                                            <TabsTrigger value="edit">
+                                                <span className="sr-only">Edit</span>
+                                            </TabsTrigger>
                                         </TabsList>
+                                        <TabsContent value="complete" className="mt-0 border-0 p-0">
+                                            Complete
+                                        </TabsContent>
+                                        <TabsContent value="insert" className="mt-0 border-0 p-0">
+                                            Insert
+                                        </TabsContent>
+                                        <TabsContent value="edit" className="mt-0 border-0 p-0">
+                                            Edit
+                                        </TabsContent>
                                     </div>
                                 </div>
                                 <div className="md:order-1">
-                                    <TabsContent value="complete" className="mt-0 border-0 p-0">
-                                        <div className="flex h-full flex-col space-y-4">
-                                            <VideoPlayer isUnplayable={false}/>
-                                        </div>
-                                    </TabsContent>
+                                    <div className="flex h-full flex-col space-y-4">
+                                        <VideoPlayer isUnplayable={false}/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
