@@ -113,7 +113,7 @@ export default function ImageUpload({
 
         <div className="flex gap-x-4 max-w-full px-2 pt-4">
           <video
-            autoPlay
+            autoPlay={true}
             className={"max-w-[200px] rounded-lg cursor-pointer hover:brightness-[1.15]"}
             src={"/videos/bunny.mp4"}
             onClick={async () => {

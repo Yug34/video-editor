@@ -15,7 +15,6 @@ import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
 import ImageUpload from "../ImageUpload";
 import { CODECS } from "@/constants";
 import {toast} from "sonner";
-import {Button} from "@/components/ui/button";
 
 export const Editor = () => {
   const ffmpegRef = useRef(new FFmpeg());
@@ -44,8 +43,11 @@ export const Editor = () => {
   useEffect(() => {
     if (video && isLoaded) {
       ffmpegRef.current.on("log", ({ message }) => {
-        messageRef.current!.innerHTML = message;
-        console.log(message);
+        toast("FFmpeg Logs", {
+          description: message,
+          id: "progressToast",
+          dismissible: false,
+        });
       });
     }
   }, [video, isLoaded]);
@@ -314,56 +316,35 @@ export const Editor = () => {
     <div>
       {video && isLoaded ? (
         <div>
-          <Button
-              variant="outline"
-              onClick={() => {
-                toast("Event has been created", {
-                  description: "Sunday, December 03, 2023 at 9:00 AM",
-                  action: {
-                    label: "Undo",
-                    onClick: () => console.log("Undo"),
-                  },
-                })
-                toast("Event has been created", {
-                  description: "Sunday, December 03, 2023 at 9:00 AM",
-                  action: {
-                    label: "Undo",
-                    onClick: () => console.log("Undo"),
-                  },
-                })
-              }}
-          >
-            Show Toast
-          </Button>
           <Tabs defaultValue={"grayscale"} className={"flex-1"}>
-            <div className="container h-full py-6">
+            <div className="h-full py-6">
               <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-                <div className="hidden flex-col space-y-4 sm:flex md:order-2">
-                  <div className="grid gap-2">
-                    <TabsList>
-                      {[
-                        { val: "grayscale", text: "Grayscale" },
-                        { val: "mute", text: "Mute" },
-                      ].map((switcher) => (
-                        <TabsTrigger key={switcher.val} value={switcher.val}>
-                          <span>{switcher.text}</span>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+                <div className="flex flex-col space-y-4 md:order-2">
+                  <div className="flex h-full">
                     <TabsContent
-                      value="grayscale"
-                      className="flex flex-col mt-0 border-0 p-0"
+                        value="grayscale"
+                        className="flex flex-col mt-0 border-0 p-0"
                     >
                       <div onClick={() => {
                         addTransformation({type: "Grayscale"});
                       }}>Grayscale</div>
                     </TabsContent>
                     <TabsContent
-                      value="mute"
-                      className="flex flex-col mt-0 border-0 p-0"
+                        value="mute"
+                        className="flex flex-col mt-0 border-0 p-0"
                     >
                       <div>Mute</div>
                     </TabsContent>
+                    <TabsList className={"flex flex-col h-full justify-start ml-auto"}>
+                      {[
+                        { val: "grayscale", text: "Grayscale" },
+                        { val: "mute", text: "Mute" },
+                      ].map((switcher) => (
+                        <TabsTrigger key={switcher.val} value={switcher.val} className={"w-full"}>
+                          <div className={"flex w-full justify-end items-end"}>{switcher.text}</div>
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
                   </div>
                 </div>
                 <div className="md:order-1">
