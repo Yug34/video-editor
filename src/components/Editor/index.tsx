@@ -74,9 +74,7 @@ export const Editor = () => {
     setVideoFormat(format);
 
     const fileData = await fetchFile(file);
-
     const ffmpeg = ffmpegRef.current;
-
     await ffmpeg.writeFile(`input.${format}`, fileData);
 
     ffmpeg.on("log", ({ message }) => {
@@ -107,6 +105,44 @@ export const Editor = () => {
 
     setVideo(fileData);
   };
+
+  const initializeWithPreloadedVideo = async (fileUrl: string) => {
+    const videoFormat = "mp4"; // All preloaded images are PNGs.
+    setVideoFormat(videoFormat);
+
+    // write file data to WASM memory
+    const fileData = await fetchFile(fileUrl);
+    const ffmpeg = ffmpegRef.current;
+    await ffmpeg.writeFile(`input.${videoFormat}`, fileData);
+
+    ffmpeg.on("log", ({ message }) => {
+      let DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
+      const msgToMatch = message.split(",")[0];
+      if (msgToMatch.match(DurationPattern)) {
+        const splitMessage = msgToMatch.split(":");
+        let timeStamps = splitMessage.splice(1, splitMessage.length);
+        timeStamps = timeStamps.map((timeStamp) => timeStamp.trim());
+        const videoDuration: VideoDuration = {
+          hours: parseInt(timeStamps[0]),
+          minutes: parseInt(timeStamps[1]),
+          seconds: parseInt(timeStamps[2]),
+        };
+        setVideoDuration(VideoDurationWrapper.fromVideoDuration(videoDuration));
+      }
+    });
+
+    // Does nothing, just getting the metadata of the video.
+    await ffmpeg.exec([`-i`, `input.${videoFormat}`]);
+
+    ffmpeg.readFile(`input.${videoFormat}`).then((videoData) => {
+      const videoURL = URL.createObjectURL(
+          new Blob([videoData], { type: `video/${videoFormat}` })
+      );
+      setSourceVideoURL(videoURL);
+    });
+
+    setVideo(fileData);
+  }
 
   const transcode = async (
     toFormat: Format,
@@ -273,23 +309,6 @@ export const Editor = () => {
     e.stopPropagation();
     setTransformations(prevTransformations => prevTransformations.filter((transformation) => transformation.type !== transformationType));
   }
-
-  const initializeWithPreloadedVideo = async (fileUrl: string) => {
-    const videoFormat = "mp4"; // All preloaded images are PNGs.
-    setVideoFormat(videoFormat);
-
-    // write file data to WASM memory
-    const fileData = await fetchFile(fileUrl);
-    const ffmpeg = ffmpegRef.current;
-    await ffmpeg.writeFile(`input.${videoFormat}`, fileData);
-
-    ffmpeg.readFile(`input.${videoFormat}`).then((imageData) => {
-        const videoURL = URL.createObjectURL(new Blob([imageData], {type: `video/${videoFormat}`}));
-        // addURLToPrevList(videoURL);
-    });
-
-    setVideo(fileData);
-}
 
   return (
     <div>

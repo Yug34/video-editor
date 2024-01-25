@@ -113,19 +113,15 @@ export default function ImageUpload({
 
         <div className="flex gap-x-4 max-w-full px-2 pt-4">
           <video
-            className={
-              "max-w-[200px] rounded-lg cursor-pointer hover:brightness-[1.15]"
-            }
+            autoPlay
+            className={"max-w-[200px] rounded-lg cursor-pointer hover:brightness-[1.15]"}
+            src={"/videos/bunny.mp4"}
             onClick={async () => {
               if (isFFmpegLoaded) {
-                await initializeWithPreloadedVideo(
-                    "../../../public/videos/bunny.mp4"
-                );
+                await initializeWithPreloadedVideo("/videos/bunny.mp4");
               }
             }}
-          >
-            <source src={"../../../public/videos/bunny.mp4"} type="video/mp4" />
-          </video>
+          />
         </div>
       </CardContent>
     </Card>
