@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { toBlobURL, fetchFile } from "@ffmpeg/util";
@@ -14,6 +14,8 @@ import { VideoDurationWrapper, isVideoFormatBrowserCompatible } from "@/util";
 import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
 import ImageUpload from "../ImageUpload";
 import { CODECS } from "@/constants";
+import {toast} from "sonner";
+import {Button} from "@/components/ui/button";
 
 export const Editor = () => {
   const ffmpegRef = useRef(new FFmpeg());
@@ -263,9 +265,14 @@ export const Editor = () => {
     );
   };
 
-  useEffect(() => {
-    console.log(videoDuration);
-  }, [videoDuration]);
+  const addTransformation = (transformation: Transformation) => {
+    setTransformations(prevTransformations => [...prevTransformations, transformation])
+  }
+
+  const removeTransformation = (e: React.MouseEvent<HTMLDivElement>, transformationType: TransformationTypes) => {
+    e.stopPropagation();
+    setTransformations(prevTransformations => prevTransformations.filter((transformation) => transformation.type !== transformationType));
+  }
 
   const initializeWithPreloadedVideo = async (fileUrl: string) => {
     const videoFormat = "mp4"; // All preloaded images are PNGs.
@@ -288,6 +295,27 @@ export const Editor = () => {
     <div>
       {video && isLoaded ? (
         <div>
+          <Button
+              variant="outline"
+              onClick={() => {
+                toast("Event has been created", {
+                  description: "Sunday, December 03, 2023 at 9:00 AM",
+                  action: {
+                    label: "Undo",
+                    onClick: () => console.log("Undo"),
+                  },
+                })
+                toast("Event has been created", {
+                  description: "Sunday, December 03, 2023 at 9:00 AM",
+                  action: {
+                    label: "Undo",
+                    onClick: () => console.log("Undo"),
+                  },
+                })
+              }}
+          >
+            Show Toast
+          </Button>
           <Tabs defaultValue={"grayscale"} className={"flex-1"}>
             <div className="container h-full py-6">
               <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
@@ -307,7 +335,9 @@ export const Editor = () => {
                       value="grayscale"
                       className="flex flex-col mt-0 border-0 p-0"
                     >
-                      <div>Grayscale</div>
+                      <div onClick={() => {
+                        addTransformation({type: "Grayscale"});
+                      }}>Grayscale</div>
                     </TabsContent>
                     <TabsContent
                       value="mute"
@@ -324,6 +354,10 @@ export const Editor = () => {
                 </div>
               </div>
             </div>
+            <div onClick={() => {
+              transform();
+            }}>Transform</div>
+            <p ref={messageRef}></p>
           </Tabs>
         </div>
       ) : (
