@@ -12,7 +12,7 @@ import {
 import { VideoDurationWrapper, isVideoFormatBrowserCompatible } from "@/util";
 
 import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
-
+import ImageUpload from "../ImageUpload";
 import { CODECS } from "@/constants";
 
 export const Editor = () => {
@@ -267,6 +267,23 @@ export const Editor = () => {
     console.log(videoDuration);
   }, [videoDuration]);
 
+  const initializeWithPreloadedVideo = async (fileUrl: string) => {
+    const videoFormat = "mp4"; // All preloaded images are PNGs.
+    setVideoFormat(videoFormat);
+
+    // write file data to WASM memory
+    const fileData = await fetchFile(fileUrl);
+    const ffmpeg = ffmpegRef.current;
+    await ffmpeg.writeFile(`input.${videoFormat}`, fileData);
+
+    ffmpeg.readFile(`input.${videoFormat}`).then((imageData) => {
+        const videoURL = URL.createObjectURL(new Blob([imageData], {type: `video/${videoFormat}`}));
+        // addURLToPrevList(videoURL);
+    });
+
+    setVideo(fileData);
+}
+
   return (
     <div>
       {video && isLoaded ? (
@@ -311,11 +328,11 @@ export const Editor = () => {
         </div>
       ) : (
         <div>
-          <input
-            id="file-upload"
-            type="file"
-            ref={fileInputRef}
-            onChange={initialize}
+          <ImageUpload
+            isFFmpegLoaded={isLoaded}
+            fileInputRef={fileInputRef}
+            initialize={initialize}
+            initializeWithPreloadedVideo={initializeWithPreloadedVideo}
           />
         </div>
       )}
