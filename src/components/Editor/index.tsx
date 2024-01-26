@@ -1,22 +1,7 @@
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 
-import {FFmpeg} from "@ffmpeg/ffmpeg";
-import {fetchFile, toBlobURL} from "@ffmpeg/util";
-import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
-import {isVideoFormatBrowserCompatible, VideoDurationWrapper} from "@/util";
-
-import ImageUpload from "../ImageUpload";
-import {CODECS, FORMAT_NAMES, FORMATS} from "@/constants";
-import {toast} from "sonner";
-
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
-import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
-import {Toggle} from "../ui/toggle";
-
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
-
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {
     Drawer,
     DrawerClose,
@@ -27,6 +12,16 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
+import {toast} from "sonner";
+import {Toggle} from "../ui/toggle";
+
+import {FFmpeg} from "@ffmpeg/ffmpeg";
+import {fetchFile, toBlobURL} from "@ffmpeg/util";
+import {CODECS, FORMAT_NAMES, FORMATS} from "@/constants";
+import ImageUpload from "../ImageUpload";
+import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
+import {isVideoFormatBrowserCompatible} from "@/util";
+import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
 
 export const Editor = () => {
     const ffmpegRef = useRef(new FFmpeg());
@@ -302,11 +297,7 @@ export const Editor = () => {
 
     const VideoPlayer = ({isUnplayable}: { isUnplayable: boolean }) => {
         return (
-            <div
-                className={`relative flex justify-center items-center h-90 max-h-90 ${
-                    isUnplayable ? "border border-white" : ""
-                } rounded-md`}
-            >
+            <div className={"relative flex justify-center items-center h-90 max-h-90 rounded-md"}>
                 <video
                     className={"w-full"}
                     ref={videoRef}
@@ -314,15 +305,12 @@ export const Editor = () => {
                     src={sourceVideoURL!}
                 />
                 {isUnplayable && (
-                    <>
-                        <div>
-                            <p>
-                                .{videoFormat} videos are unplayable on the browser. Although,
-                                your video was edited successfully.
-                            </p>
-                            <p>Click on the download button to download your video!</p>
-                        </div>
-                    </>
+                    <div
+                        className={"absolute bg-black w-full h-full flex flex-col justify-center items-center opacity-60"}>
+                        <p>Unfortunately, <b>.{videoFormat}</b> videos are not supported on browsers.</p>
+                        <p>Although, your video was edited successfully.</p>
+                        <Button onClick={downloadVideo}>Click here to download!</Button>
+                    </div>
                 )}
             </div>
         );
@@ -398,8 +386,8 @@ export const Editor = () => {
                                                 <DrawerHeader>
                                                     <DrawerTitle>Transcode Video</DrawerTitle>
                                                     <DrawerDescription>
-                                                        Transcode video from one format and codec to
-                                                        another.
+                                                        Transcode video from <b>{videoFormat}</b> to another format and
+                                                        codec.
                                                     </DrawerDescription>
                                                 </DrawerHeader>
                                                 <div className="p-4 pb-0">
@@ -470,8 +458,9 @@ export const Editor = () => {
                                                                 }
                                                             });
                                                         }}
-                                                    >Convert video from {videoFormat} to {videoConvertFormat} in
-                                                        codec {videoConvertCodec}</Button>
+                                                    >
+                                                        Convert to {videoConvertFormat} in codec {videoConvertCodec}
+                                                    </Button>
 
                                                     <DrawerClose asChild>
                                                         <Button variant="outline">Cancel</Button>
@@ -480,68 +469,13 @@ export const Editor = () => {
                                             </div>
                                         </DrawerContent>
                                     </Drawer>
-                                    <Button onClick={downloadVideo}>
-                                        Download
-                                    </Button>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="outline">Grayscale</Button>
-                                        </PopoverTrigger>
-                                        <Button onClick={transform}>
-                                            Transform
-                                        </Button>
-                                        <PopoverContent side="left" className="w-80">
-                                            <div className="grid gap-4">
-                                                <div className="space-y-2">
-                                                    <h4 className="font-medium leading-none">
-                                                        Grayscale
-                                                    </h4>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Covert video to black and white.
-                                                    </p>
-                                                </div>
-                                                <div className="grid gap-2">
-                                                    <div className="grid grid-cols-3 items-center gap-4">
-                                                        <Label htmlFor="width">Width</Label>
-                                                        <Input
-                                                            id="width"
-                                                            defaultValue="100%"
-                                                            className="col-span-2 h-8"
-                                                        />
-                                                    </div>
-                                                    <div className="grid grid-cols-3 items-center gap-4">
-                                                        <Label htmlFor="maxWidth">Max. width</Label>
-                                                        <Input
-                                                            id="maxWidth"
-                                                            defaultValue="300px"
-                                                            className="col-span-2 h-8"
-                                                        />
-                                                    </div>
-                                                    <div className="grid grid-cols-3 items-center gap-4">
-                                                        <Label htmlFor="height">Height</Label>
-                                                        <Input
-                                                            id="height"
-                                                            defaultValue="25px"
-                                                            className="col-span-2 h-8"
-                                                        />
-                                                    </div>
-                                                    <div className="grid grid-cols-3 items-center gap-4">
-                                                        <Label htmlFor="maxHeight">Max. height</Label>
-                                                        <Input
-                                                            id="maxHeight"
-                                                            defaultValue="none"
-                                                            className="col-span-2 h-8"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                    <Button onClick={downloadVideo}>Download</Button>
+                                    <Button onClick={transform}>Transform</Button>
                                 </div>
                             </div>
                             <div className="md:order-1">
                                 <div className="flex h-full flex-col space-y-4">
-                                    <VideoPlayer isUnplayable={false}/>
+                                    <VideoPlayer isUnplayable={isUnplayable}/>
                                 </div>
                             </div>
                         </div>
