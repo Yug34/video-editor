@@ -344,6 +344,64 @@ export const Editor = () => {
         );
     };
 
+    const [trimFromPercent, setTrimFromPercent] = useState<number>(30.00);
+    const [trimToPercent, setTrimToPercent] = useState<number>(60.00);
+    const [trimThumbnailPercent, setTrimThumbnailPercent] = useState<number>(45.00);
+
+    const inputRefFrom = useRef<HTMLInputElement | null>(null);
+    const inputRefTo = useRef<HTMLInputElement | null>(null);
+    const inputRefThumbnail = useRef<HTMLInputElement | null>(null);
+
+    const thumbnailVideoRef = useRef<HTMLVideoElement>(null);
+
+    const handleTrimFromChange = (e: any) => {
+        const inputValue = parseFloat(e.target.value);
+        const value = Math.min(inputValue, trimToPercent - 1);
+
+        if (trimThumbnailPercent < value) {
+            setTrimThumbnailPercent(value + 0.01);
+        }
+
+        setTrimFromPercent(value);
+    }
+
+    const handleTrimToChange = (e: any) => {
+        const inputValue = parseFloat(e.target.value);
+        const value = Math.max(inputValue, trimFromPercent + 1);
+
+        if (trimThumbnailPercent > value) {
+            setTrimThumbnailPercent(value - 0.01);
+        }
+
+        setTrimToPercent(value);
+    }
+
+    const handleTrimThumbChange = (e: any) => {
+        const inputValue = parseFloat(e.target.value);
+        const value = Math.min(Math.max(inputValue, trimFromPercent + 0.01), trimToPercent - 0.01);
+
+        const videoDurationInSeconds = videoDuration!.toSeconds();
+        thumbnailVideoRef.current!.currentTime = videoDurationInSeconds * (value / 100);
+
+        setTrimThumbnailPercent(value);
+    }
+
+    const addTrimTransformation = () => {
+        const toSeconds = (trimToPercent / 100) * videoDuration!.toSeconds();
+        const toTimeStamp = VideoDurationWrapper.fromSeconds(toSeconds);
+
+        const fromSeconds = (trimFromPercent / 100) * videoDuration!.toSeconds();
+        const fromTimeStamp = VideoDurationWrapper.fromSeconds(fromSeconds);
+
+        addTransformation({
+            type: "Trim",
+            trim: {
+                from: fromTimeStamp,
+                to: toTimeStamp
+            }
+        });
+    };
+
     return (
         <div>
             {video && isLoaded ? (
@@ -353,7 +411,7 @@ export const Editor = () => {
                             <div className="flex flex-col space-y-4 md:order-2">
                                 <div className="flex flex-col h-full">
                                     <Toggle
-                                        aria-label="Toggle bold"
+                                        aria-label="Toggle Video Grayscale"
                                         onPressedChange={(pressed: boolean) => {
                                             if (pressed) {
                                                 addTransformation({type: "Grayscale"});
@@ -366,7 +424,7 @@ export const Editor = () => {
                                         Grayscale
                                     </Toggle>
                                     <Toggle
-                                        aria-label="Toggle bold"
+                                        aria-label="Toggle Video Mute"
                                         onPressedChange={(pressed: boolean) => {
                                             if (pressed) {
                                                 addTransformation({type: "Mute"});
@@ -395,7 +453,7 @@ export const Editor = () => {
                                                         <div className="flex-1 text-center">
                                                             <div
                                                                 className="text-[0.70rem] uppercase text-muted-foreground">
-                                                                Convert video format to convert to
+                                                                Convert video to
                                                             </div>
                                                         </div>
                                                     </div>
@@ -460,6 +518,50 @@ export const Editor = () => {
                                                         }}
                                                     >
                                                         Convert to {videoConvertFormat} in codec {videoConvertCodec}
+                                                    </Button>
+
+                                                    <DrawerClose asChild>
+                                                        <Button variant="outline">Cancel</Button>
+                                                    </DrawerClose>
+                                                </DrawerFooter>
+                                            </div>
+                                        </DrawerContent>
+                                    </Drawer>
+                                    <Drawer>
+                                        <DrawerTrigger asChild>
+                                            <Button variant="outline">Trim video</Button>
+                                        </DrawerTrigger>
+                                        <DrawerContent>
+                                            <div className="mx-auto w-full max-w-sm">
+                                                <DrawerHeader>
+                                                    <DrawerTitle>Trim video</DrawerTitle>
+                                                    <DrawerDescription>
+                                                        Trim video
+                                                    </DrawerDescription>
+                                                </DrawerHeader>
+                                                <div className="p-4 pb-0">
+                                                    <div className="flex items-center justify-center space-x-2">
+                                                        <div className="flex-1 text-center">
+                                                            <div
+                                                                className="text-[0.70rem] uppercase text-muted-foreground">
+                                                                Trim video
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-3 h-[120px]">
+                                                        <div className="flex items-center justify-center space-x-2">
+                                                            <div className="flex-1 text-center">
+                                                                <div
+                                                                    className="text-[0.70rem] uppercase text-muted-foreground">
+                                                                    Choose format codec
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <DrawerFooter>
+                                                    <Button onClick={addTrimTransformation}>
+                                                        Trim video from {trimFromPercent}% to {trimThumbnailPercent}%
                                                     </Button>
 
                                                     <DrawerClose asChild>
