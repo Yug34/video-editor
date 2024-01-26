@@ -23,6 +23,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Toggle } from "../ui/toggle";
+import { Bold } from "lucide-react";
 
 export const Editor = () => {
   const ffmpegRef = useRef(new FFmpeg());
@@ -319,10 +321,8 @@ export const Editor = () => {
   };
 
   const removeTransformation = (
-    e: React.MouseEvent<HTMLDivElement>,
     transformationType: TransformationTypes
   ) => {
-    e.stopPropagation();
     setTransformations((prevTransformations) =>
       prevTransformations.filter(
         (transformation) => transformation.type !== transformationType
@@ -338,9 +338,34 @@ export const Editor = () => {
             <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
               <div className="flex flex-col space-y-4 md:order-2">
                 <div className="flex flex-col h-full">
+                  <Toggle
+                    aria-label="Toggle bold"
+                    onPressedChange={(pressed: boolean) => {
+                      if (pressed) {
+                        addTransformation({type: "Grayscale"})
+                      } else {
+                        removeTransformation("Grayscale")
+                      }
+                    }}
+                  >
+                    {/* <Bold className="h-4 w-4" /> */}
+                    Grayscale
+                  </Toggle>
+                  <Toggle
+                    aria-label="Toggle bold"
+                    onPressedChange={(pressed: boolean) => {
+                      if (pressed) {
+                        addTransformation({type: "Mute"})
+                      } else {
+                        removeTransformation("Mute")
+                      }
+                    }}
+                  >
+                    Mute
+                  </Toggle>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline">Open popover</Button>
+                      <Button variant="outline">Grayscale</Button>
                     </PopoverTrigger>
                     <Button
                       onClick={() => {
@@ -353,10 +378,10 @@ export const Editor = () => {
                       <div className="grid gap-4">
                         <div className="space-y-2">
                           <h4 className="font-medium leading-none">
-                            Dimensions
+                            Grayscale
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            Set the dimensions for the layer.
+                            Covert video to black and white.
                           </p>
                         </div>
                         <div className="grid gap-2">
