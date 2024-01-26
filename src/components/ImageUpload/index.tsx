@@ -112,16 +112,23 @@ export default function ImageUpload({
         </div>
 
         <div className="flex gap-x-4 max-w-full px-2 pt-4">
-          <video
-            autoPlay={true}
-            className={"max-w-[200px] rounded-lg cursor-pointer hover:brightness-[1.15]"}
-            src={"/videos/bunny.mp4"}
-            onClick={async () => {
-              if (isFFmpegLoaded) {
-                await initializeWithPreloadedVideo("/videos/bunny.mp4");
-              }
-            }}
-          />
+          {["/videos/bunny.mp4", "/videos/bunny1.mp4", "/videos/bunny.mp4"].map(
+            (videoSource: string) => (
+              <video
+                key={videoSource}
+                autoPlay={true}
+                className={
+                  "max-w-[200px] rounded-lg cursor-pointer hover:brightness-[1.15]"
+                }
+                src={videoSource}
+                onClick={async () => {
+                  if (isFFmpegLoaded) {
+                    await initializeWithPreloadedVideo(videoSource);
+                  }
+                }}
+              />
+            )
+          )}
         </div>
       </CardContent>
     </Card>

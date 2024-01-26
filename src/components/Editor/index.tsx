@@ -11,10 +11,18 @@ import {
 } from "@/types";
 import { VideoDurationWrapper, isVideoFormatBrowserCompatible } from "@/util";
 
-import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
 import ImageUpload from "../ImageUpload";
 import { CODECS } from "@/constants";
-import {toast} from "sonner";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export const Editor = () => {
   const ffmpegRef = useRef(new FFmpeg());
@@ -138,13 +146,13 @@ export const Editor = () => {
 
     ffmpeg.readFile(`input.${videoFormat}`).then((videoData) => {
       const videoURL = URL.createObjectURL(
-          new Blob([videoData], { type: `video/${videoFormat}` })
+        new Blob([videoData], { type: `video/${videoFormat}` })
       );
       setSourceVideoURL(videoURL);
     });
 
     setVideo(fileData);
-  }
+  };
 
   const transcode = async (
     toFormat: Format,
@@ -304,61 +312,100 @@ export const Editor = () => {
   };
 
   const addTransformation = (transformation: Transformation) => {
-    setTransformations(prevTransformations => [...prevTransformations, transformation])
-  }
+    setTransformations((prevTransformations) => [
+      ...prevTransformations,
+      transformation,
+    ]);
+  };
 
-  const removeTransformation = (e: React.MouseEvent<HTMLDivElement>, transformationType: TransformationTypes) => {
+  const removeTransformation = (
+    e: React.MouseEvent<HTMLDivElement>,
+    transformationType: TransformationTypes
+  ) => {
     e.stopPropagation();
-    setTransformations(prevTransformations => prevTransformations.filter((transformation) => transformation.type !== transformationType));
-  }
+    setTransformations((prevTransformations) =>
+      prevTransformations.filter(
+        (transformation) => transformation.type !== transformationType
+      )
+    );
+  };
 
   return (
     <div>
       {video && isLoaded ? (
         <div>
-          <Tabs defaultValue={"grayscale"} className={"flex-1"}>
-            <div className="h-full py-6">
-              <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-                <div className="flex flex-col space-y-4 md:order-2">
-                  <div className="flex h-full">
-                    <TabsContent
-                        value="grayscale"
-                        className="flex flex-col mt-0 border-0 p-0"
+          <div className="h-full py-6">
+            <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
+              <div className="flex flex-col space-y-4 md:order-2">
+                <div className="flex flex-col h-full">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline">Open popover</Button>
+                    </PopoverTrigger>
+                    <Button
+                      onClick={() => {
+                        transform();
+                      }}
                     >
-                      <div onClick={() => {
-                        addTransformation({type: "Grayscale"});
-                      }}>Grayscale</div>
-                    </TabsContent>
-                    <TabsContent
-                        value="mute"
-                        className="flex flex-col mt-0 border-0 p-0"
-                    >
-                      <div>Mute</div>
-                    </TabsContent>
-                    <TabsList className={"flex flex-col h-full justify-start ml-auto"}>
-                      {[
-                        { val: "grayscale", text: "Grayscale" },
-                        { val: "mute", text: "Mute" },
-                      ].map((switcher) => (
-                        <TabsTrigger key={switcher.val} value={switcher.val} className={"w-full"}>
-                          <div className={"flex w-full justify-end items-end"}>{switcher.text}</div>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                  </div>
+                      Transform
+                    </Button>
+                    <PopoverContent side="left" className="w-80">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <h4 className="font-medium leading-none">
+                            Dimensions
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            Set the dimensions for the layer.
+                          </p>
+                        </div>
+                        <div className="grid gap-2">
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Label htmlFor="width">Width</Label>
+                            <Input
+                              id="width"
+                              defaultValue="100%"
+                              className="col-span-2 h-8"
+                            />
+                          </div>
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Label htmlFor="maxWidth">Max. width</Label>
+                            <Input
+                              id="maxWidth"
+                              defaultValue="300px"
+                              className="col-span-2 h-8"
+                            />
+                          </div>
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Label htmlFor="height">Height</Label>
+                            <Input
+                              id="height"
+                              defaultValue="25px"
+                              className="col-span-2 h-8"
+                            />
+                          </div>
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Label htmlFor="maxHeight">Max. height</Label>
+                            <Input
+                              id="maxHeight"
+                              defaultValue="none"
+                              className="col-span-2 h-8"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <div className="md:order-1">
-                  <div className="flex h-full flex-col space-y-4">
-                    <VideoPlayer isUnplayable={false} />
-                  </div>
+              </div>
+              <div className="md:order-1">
+                <div className="flex h-full flex-col space-y-4">
+                  <VideoPlayer isUnplayable={false} />
                 </div>
               </div>
             </div>
-            <div onClick={() => {
-              transform();
-            }}>Transform</div>
-            <p ref={messageRef}></p>
-          </Tabs>
+          </div>
+          <p ref={messageRef}></p>
         </div>
       ) : (
         <div>
