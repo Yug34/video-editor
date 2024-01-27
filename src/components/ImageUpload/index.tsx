@@ -47,16 +47,13 @@ interface ImageUploadProps {
     fileInputRef: RefObject<HTMLInputElement>;
     isFFmpegLoaded: boolean;
 
-    initialize(e: ChangeEvent): Promise<void>;
-
-    initializeWithPreloadedVideo(fileUrl: string): Promise<void>;
+    initialize(input: ChangeEvent | string): Promise<void>;
 }
 
 export default function ImageUpload({
                                         initialize,
                                         fileInputRef,
                                         isFFmpegLoaded,
-                                        initializeWithPreloadedVideo,
                                     }: ImageUploadProps) {
     return (
         <Card>
@@ -126,7 +123,7 @@ export default function ImageUpload({
                             src={videoSource}
                             onClick={async () => {
                                 if (isFFmpegLoaded) {
-                                    await initializeWithPreloadedVideo(videoSource);
+                                    await initialize(videoSource);
                                 }
                             }}
                         />

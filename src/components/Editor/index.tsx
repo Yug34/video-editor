@@ -89,52 +89,23 @@ export const Editor = () => {
         setIsLoaded(true);
     };
 
-    const initialize = async (e: ChangeEvent) => {
-        const file = (e.target as HTMLInputElement)!.files![0];
-
-        const format = file.type.split("/")[1] as Format;
-        setVideoFormat(format);
-
-        const fileData = await fetchFile(file);
+    const initialize = async (input: ChangeEvent | string) => {
         const ffmpeg = ffmpegRef.current;
-        await ffmpeg.writeFile(`input.${format}`, fileData);
+        let fileData: Uint8Array;
+        let videoFormat: Format;
 
-        ffmpeg.on("log", ({message}) => {
-            let DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
-            const msgToMatch = message.split(",")[0];
-            if (msgToMatch.match(DurationPattern)) {
-                const splitMessage = msgToMatch.split(":");
-                let timeStamps = splitMessage.splice(1, splitMessage.length);
-                timeStamps = timeStamps.map((timeStamp) => timeStamp.trim());
-                const videoDuration: VideoDuration = {
-                    hours: parseInt(timeStamps[0]),
-                    minutes: parseInt(timeStamps[1]),
-                    seconds: parseInt(timeStamps[2]),
-                };
-                setVideoDuration(VideoDurationWrapper.fromVideoDuration(videoDuration));
-            }
-        });
+        // Handle Preloaded video case and ChangeEvent case differently
+        if (typeof input === "string") {
+            videoFormat = "mp4";
+            setVideoFormat(videoFormat);
+            fileData = await fetchFile(input);
+        } else {
+            const file = (input.target as HTMLInputElement)!.files![0];
+            videoFormat = file.type.split("/")[1] as Format;
+            setVideoFormat(videoFormat);
+            fileData = await fetchFile(file);
+        }
 
-        // Does nothing, just getting the metadata of the video.
-        await ffmpeg.exec([`-i`, `input.${format}`]);
-
-        ffmpeg.readFile(`input.${format}`).then((videoData) => {
-            const videoURL = URL.createObjectURL(
-                new Blob([videoData], {type: `video/${format}`})
-            );
-            setSourceVideoURL(videoURL);
-        });
-
-        setVideo(fileData);
-    };
-
-    const initializeWithPreloadedVideo = async (fileUrl: string) => {
-        const videoFormat = "mp4"; // All preloaded images are PNGs.
-        setVideoFormat(videoFormat);
-
-        // write file data to WASM memory
-        const fileData = await fetchFile(fileUrl);
-        const ffmpeg = ffmpegRef.current;
         await ffmpeg.writeFile(`input.${videoFormat}`, fileData);
 
         ffmpeg.on("log", ({message}) => {
@@ -394,7 +365,6 @@ export const Editor = () => {
                     isFFmpegLoaded={isLoaded}
                     fileInputRef={fileInputRef}
                     initialize={initialize}
-                    initializeWithPreloadedVideo={initializeWithPreloadedVideo}
                 />
             )}
         </div>
