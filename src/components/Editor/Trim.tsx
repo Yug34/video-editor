@@ -2,7 +2,6 @@ import {
     Drawer,
     DrawerClose,
     DrawerContent,
-    DrawerDescription,
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
@@ -13,6 +12,8 @@ import {Format, Transformation} from "@/types";
 import {useRef, useState} from "react";
 import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
 import {Slider} from "../ui/slider";
+import {Skeleton} from "@/components/ui/skeleton";
+import {Loader} from "lucide-react";
 
 interface TrimProps {
     videoFormat: Format;
@@ -23,7 +24,6 @@ interface TrimProps {
 }
 
 export const Trim = ({
-                         videoFormat,
                          addTransformation,
                          videoDuration,
                          sourceVideoURL
@@ -31,6 +31,8 @@ export const Trim = ({
     const [trimFromPercent, setTrimFromPercent] = useState<number>(30);
     const [trimToPercent, setTrimToPercent] = useState<number>(60);
     const [trimThumbnailPercent, setTrimThumbnailPercent] = useState<number>(45);
+
+    const [isVideoLoading, setIsVideoLoading] = useState(false);
 
     const thumbnailVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -56,30 +58,27 @@ export const Trim = ({
                 <Button variant="outline">Trim Video</Button>
             </DrawerTrigger>
             <DrawerContent>
-                <div className="mx-auto w-full max-w-sm">
+                <div className="mx-auto w-full max-w-lg">
                     <DrawerHeader>
-                        <DrawerTitle>Transcode Video</DrawerTitle>
-                        <DrawerDescription>
-                            Transcode video from <b>{videoFormat}</b> to another format and
-                            codec.
-                        </DrawerDescription>
+                        <DrawerTitle>Trim Video</DrawerTitle>
                     </DrawerHeader>
-                    <div className="p-4 pb-0">
-                        <div className="flex items-center justify-center space-x-2">
-                            <div className="flex-1 text-center">
-                                <div className="text-[0.70rem] uppercase text-muted-foreground">
-                                    Trim video
-                                </div>
-                            </div>
+                    <div className="p-4">
+                        <div className={"w-full h-60 max-h-60"}>
+                            {isVideoLoading ? (
+                                <Skeleton className={"flex justify-center items-center w-full h-full"}>
+                                    <Loader className={"animate-spin w-full"}/>
+                                </Skeleton>
+                            ) : (
+                                <video
+                                    className={"w-full h-full"}
+                                    controls
+                                    ref={thumbnailVideoRef}
+                                    src={sourceVideoURL + `#t=${videoDuration.toTimeStampAtPercent(trimFromPercent)},${videoDuration.toTimeStampAtPercent(trimToPercent)}`}
+                                />
+                            )}
                         </div>
-
-                        <video
-                            className={"w-full h-full"}
-                            ref={thumbnailVideoRef}
-                            src={sourceVideoURL + `#t=${videoDuration.toTimeStampAtPercent(trimFromPercent)},${videoDuration.toTimeStampAtPercent(trimToPercent)}`}
-                        />
-
                         <Slider
+                            className={"mt-12"}
                             defaultValue={[
                                 trimFromPercent,
                                 trimThumbnailPercent,
@@ -89,6 +88,11 @@ export const Trim = ({
                                 setTrimFromPercent(e[0]);
                                 setTrimToPercent(e[1]);
                                 setTrimThumbnailPercent(e[2]);
+
+                                setIsVideoLoading(true);
+                                setTimeout(() => {
+                                    setIsVideoLoading(false);
+                                }, 1000);
                             }}
                         />
                     </div>
