@@ -1,19 +1,7 @@
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 
 import {Button} from "@/components/ui/button";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer";
 import {toast} from "sonner";
-import {Toggle} from "../ui/toggle";
 
 import {FFmpeg} from "@ffmpeg/ffmpeg";
 import {fetchFile, toBlobURL} from "@ffmpeg/util";
@@ -22,6 +10,9 @@ import ImageUpload from "../ImageUpload";
 import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
 import {isVideoFormatBrowserCompatible} from "@/util";
 import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
+import {Grayscale} from "@/components/Editor/Grayscale";
+import {Mute} from "@/components/Editor/Mute";
+import {Transcode} from "@/components/Editor/Transcode";
 
 export const Editor = () => {
     const ffmpegRef = useRef(new FFmpeg());
@@ -44,9 +35,7 @@ export const Editor = () => {
     const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
 
     const [videoConvertFormat, setVideoConvertFormat] = useState<Format | null>(null);
-    const [videoConvertCodec, setVideoConvertCodec] = useState<Codec | null>(
-
-    );
+    const [videoConvertCodec, setVideoConvertCodec] = useState<Codec | null>(null);
 
     useEffect(() => {
         if (videoFormat) {
@@ -352,123 +341,22 @@ export const Editor = () => {
                         <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
                             <div className="flex flex-col space-y-4 md:order-2">
                                 <div className="flex flex-col h-full">
-                                    <Toggle
-                                        aria-label="Toggle Video Grayscale"
-                                        onPressedChange={(pressed: boolean) => {
-                                            if (pressed) {
-                                                addTransformation({type: "Grayscale"});
-                                            } else {
-                                                removeTransformation("Grayscale");
-                                            }
-                                        }}
-                                    >
-                                        {/* <Bold className="h-4 w-4" /> */}
-                                        Grayscale
-                                    </Toggle>
-                                    <Toggle
-                                        aria-label="Toggle Video Mute"
-                                        onPressedChange={(pressed: boolean) => {
-                                            if (pressed) {
-                                                addTransformation({type: "Mute"});
-                                            } else {
-                                                removeTransformation("Mute");
-                                            }
-                                        }}
-                                    >
-                                        Mute
-                                    </Toggle>
-                                    <Drawer>
-                                        <DrawerTrigger asChild>
-                                            <Button variant="outline">Transcode Video</Button>
-                                        </DrawerTrigger>
-                                        <DrawerContent>
-                                            <div className="mx-auto w-full max-w-sm">
-                                                <DrawerHeader>
-                                                    <DrawerTitle>Transcode Video</DrawerTitle>
-                                                    <DrawerDescription>
-                                                        Transcode video from <b>{videoFormat}</b> to another format and
-                                                        codec.
-                                                    </DrawerDescription>
-                                                </DrawerHeader>
-                                                <div className="p-4 pb-0">
-                                                    <div className="flex items-center justify-center space-x-2">
-                                                        <div className="flex-1 text-center">
-                                                            <div
-                                                                className="text-[0.70rem] uppercase text-muted-foreground">
-                                                                Convert video to
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-3 h-[120px]">
-                                                        <Select
-                                                            onValueChange={(e: string) => {
-                                                                setVideoConvertFormat(e as Format);
-                                                                setVideoConvertCodec(FORMATS[e as Format].codecs[0] as Codec);
-                                                            }}
-                                                        >
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder={videoConvertFormat}/>
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {FORMAT_NAMES.filter(
-                                                                    (format) => format !== videoFormat
-                                                                ).map((format) => (
-                                                                    <SelectItem key={format} value={format}>
-                                                                        .{format}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-
-                                                        <div className="flex items-center justify-center space-x-2">
-                                                            <div className="flex-1 text-center">
-                                                                <div
-                                                                    className="text-[0.70rem] uppercase text-muted-foreground">
-                                                                    Choose format codec
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <Select onValueChange={(e) => {
-                                                            setVideoConvertCodec(e as Codec);
-                                                        }}>
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder={videoConvertCodec}/>
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {FORMATS[videoConvertFormat!].codecs.map(
-                                                                    (codec) => (
-                                                                        <SelectItem key={codec} value={codec}>
-                                                                            {codec}
-                                                                        </SelectItem>
-                                                                    )
-                                                                )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                </div>
-                                                <DrawerFooter>
-                                                    <Button
-                                                        onClick={() => {
-                                                            addTransformation({
-                                                                type: "Convert",
-                                                                transcode: {
-                                                                    to: videoConvertFormat!,
-                                                                    codec: videoConvertCodec!
-                                                                }
-                                                            });
-                                                        }}
-                                                    >
-                                                        Convert to {videoConvertFormat} in codec {videoConvertCodec}
-                                                    </Button>
-
-                                                    <DrawerClose asChild>
-                                                        <Button variant="outline">Cancel</Button>
-                                                    </DrawerClose>
-                                                </DrawerFooter>
-                                            </div>
-                                        </DrawerContent>
-                                    </Drawer>
+                                    <Grayscale
+                                        addTransformation={addTransformation}
+                                        removeTransformation={removeTransformation}
+                                    />
+                                    <Mute
+                                        addTransformation={addTransformation}
+                                        removeTransformation={removeTransformation}
+                                    />
+                                    <Transcode
+                                        videoFormat={videoFormat!}
+                                        setVideoConvertFormat={setVideoConvertFormat}
+                                        setVideoConvertCodec={setVideoConvertCodec}
+                                        videoConvertFormat={videoConvertFormat!}
+                                        videoConvertCodec={videoConvertCodec!}
+                                        addTransformation={addTransformation}
+                                    />
                                     <Button onClick={downloadVideo}>Download</Button>
                                     <Button onClick={transform}>Transform</Button>
                                 </div>
