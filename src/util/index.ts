@@ -13,6 +13,17 @@ export const isVideoFormatBrowserCompatible = (videoFormat: Format): boolean => 
     return FORMATS[videoFormat].isPlayable;
 }
 
+export const downloadLinkedItem = (fileName: string, url: string) => {
+    const link = document.createElement("a");
+    link.download = fileName;
+    link.target = "_blank";
+
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
 export const px2vw = (size: number, width: number = 1920) =>
     `${(size / width) * 100}vw`;
 export const px2vh = (size: number, height: number = 1080) =>

@@ -8,7 +8,7 @@ import {fetchFile, toBlobURL} from "@ffmpeg/util";
 import {CODECS, FORMAT_NAMES, FORMATS} from "@/constants";
 import ImageUpload from "../ImageUpload";
 import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
-import {isVideoFormatBrowserCompatible} from "@/util";
+import {downloadLinkedItem, isVideoFormatBrowserCompatible} from "@/util";
 import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
 import {Grayscale} from "@/components/Editor/Grayscale";
 import {Mute} from "@/components/Editor/Mute";
@@ -306,15 +306,7 @@ export const Editor = () => {
     };
 
     const downloadVideo = () => {
-        const link = document.createElement("a");
-        link.download = `output.${videoFormat}`;
-        link.target = "_blank";
-
-        link.href = sourceVideoURL!;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
+        downloadLinkedItem(`output.${videoFormat}`, sourceVideoURL!);
         setIsDownloaded(true);
     };
 
