@@ -1,5 +1,6 @@
 import {Toggle} from "@/components/ui/toggle";
 import {Transformation, TransformationTypes} from "@/types";
+import {MaskOnIcon} from "@radix-ui/react-icons";
 
 interface GrayscaleProps {
     addTransformation(transformation: Transformation): void;
@@ -10,6 +11,7 @@ interface GrayscaleProps {
 export const Grayscale = ({addTransformation, removeTransformation}: GrayscaleProps) => {
     return (
         <Toggle
+            className={"max-w-36"}
             aria-label="Toggle Video Grayscale"
             onPressedChange={(pressed: boolean) => {
                 if (pressed) {
@@ -19,8 +21,8 @@ export const Grayscale = ({addTransformation, removeTransformation}: GrayscalePr
                 }
             }}
         >
-            {/* <Bold className="h-4 w-4" /> */}
             Grayscale
+            <MaskOnIcon className={"ml-3"}/>
         </Toggle>
     )
 }

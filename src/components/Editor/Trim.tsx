@@ -14,6 +14,7 @@ import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
 import {Slider} from "../ui/slider";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Loader} from "lucide-react";
+import {ScissorsIcon} from "@radix-ui/react-icons";
 
 interface TrimProps {
     videoFormat: Format;
@@ -55,7 +56,13 @@ export const Trim = ({
     return (
         <Drawer>
             <DrawerTrigger asChild>
-                <Button variant="outline">Trim Video</Button>
+                <Button
+                    variant="outline"
+                    className={"max-w-36"}
+                >
+                    Trim
+                    <ScissorsIcon className={"ml-3"}/>
+                </Button>
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mx-auto w-full max-w-lg">

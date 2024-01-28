@@ -14,6 +14,7 @@ import {Grayscale} from "@/components/Editor/Grayscale";
 import {Mute} from "@/components/Editor/Mute";
 import {Transcode} from "@/components/Editor/Transcode";
 import {Trim} from "./Trim";
+import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
 
 export const Editor = () => {
     const ffmpegRef = useRef(new FFmpeg());
@@ -347,8 +348,17 @@ export const Editor = () => {
                                         addTransformation={addTransformation}
                                         sourceVideoURL={sourceVideoURL!}
                                     />
-                                    <Button onClick={downloadVideo}>Download</Button>
-                                    <Button onClick={transform}>Transform</Button>
+                                    <Button disabled={!isTransformComplete} onClick={downloadVideo}
+                                            className={"max-w-36"}>
+                                        Download
+                                        <DownloadIcon className={"ml-3"}/>
+                                    </Button>
+                                    <Button
+                                        className={"max-w-36"}
+                                        onClick={transform}>
+                                        Transform
+                                        <MagicWandIcon className={"ml-3"}/>
+                                    </Button>
                                 </div>
                             </div>
                             <div className="md:order-1">
