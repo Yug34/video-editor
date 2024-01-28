@@ -36,7 +36,7 @@ export const Transcode = ({
     return (
         <Drawer>
             <DrawerTrigger asChild>
-                <Button variant="outline" className={"max-w-36"}>
+                <Button variant="outline">
                     Transcode
                     <MixIcon className={"ml-3"}/>
                 </Button>

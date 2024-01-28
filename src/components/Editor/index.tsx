@@ -15,6 +15,7 @@ import {Mute} from "@/components/Editor/Mute";
 import {Transcode} from "@/components/Editor/Transcode";
 import {Trim} from "./Trim";
 import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
+import {useTransformationsStore} from "@/store";
 
 export const Editor = () => {
     const ffmpegRef = useRef(new FFmpeg());
@@ -31,7 +32,6 @@ export const Editor = () => {
 
     const [isUnplayable, setIsUnplayable] = useState<boolean>(false);
 
-    const [transformations, setTransformations] = useState<Transformation[]>([]);
     const [isTransformComplete, setIsTransformComplete] =
         useState<boolean>(false);
     const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
@@ -43,9 +43,7 @@ export const Editor = () => {
         null
     );
 
-    useEffect(() => {
-        console.log(transformations);
-    }, [transformations]);
+    const {transformations, addTransformation, removeTransformation} = useTransformationsStore();
 
     useEffect(() => {
         if (videoFormat) {
@@ -269,11 +267,7 @@ export const Editor = () => {
 
     const VideoPlayer = ({isUnplayable}: { isUnplayable: boolean }) => {
         return (
-            <div
-                className={
-                    "relative flex justify-center items-center h-90 max-h-90 rounded-md"
-                }
-            >
+            <div className={"relative flex justify-center items-center h-90 max-h-90 rounded-md"}>
                 <video
                     className={"w-full"}
                     ref={videoRef}
@@ -282,9 +276,7 @@ export const Editor = () => {
                 />
                 {isUnplayable && (
                     <div
-                        className={
-                            "absolute bg-black w-full h-full flex flex-col justify-center items-center opacity-60"
-                        }
+                        className={"absolute bg-black w-full h-full flex flex-col justify-center items-center opacity-60"}
                     >
                         <p>
                             Unfortunately, <b>.{videoFormat}</b> videos are not supported on
@@ -303,37 +295,19 @@ export const Editor = () => {
         setIsDownloaded(true);
     };
 
-    const addTransformation = (transformation: Transformation) => {
-        setTransformations((prevTransformations) => [
-            ...prevTransformations,
-            transformation,
-        ]);
-    };
-
-    const removeTransformation = (transformationType: TransformationTypes) => {
-        setTransformations((prevTransformations) =>
-            prevTransformations.filter(
-                (transformation) => transformation.type !== transformationType
-            )
-        );
-    };
-
     return (
         <div>
             {video && isLoaded ? (
                 <div>
                     <div className="h-full py-6">
                         <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-                            <div className="flex flex-col space-y-4 md:order-2">
-                                <div className="flex flex-col h-full">
-                                    <Grayscale
-                                        addTransformation={addTransformation}
-                                        removeTransformation={removeTransformation}
-                                    />
-                                    <Mute
-                                        addTransformation={addTransformation}
-                                        removeTransformation={removeTransformation}
-                                    />
+                            <div className="flex w-full h-full flex-col space-y-4">
+                                <VideoPlayer isUnplayable={isUnplayable}/>
+                            </div>
+                            <div className="flex flex-col space-y-4 max-w-36">
+                                <div className="flex flex-col h-full max-w-36">
+                                    <Grayscale/>
+                                    <Mute/>
                                     <Transcode
                                         videoFormat={videoFormat!}
                                         setVideoConvertFormat={setVideoConvertFormat}
@@ -348,22 +322,15 @@ export const Editor = () => {
                                         addTransformation={addTransformation}
                                         sourceVideoURL={sourceVideoURL!}
                                     />
-                                    <Button disabled={!isTransformComplete} onClick={downloadVideo}
-                                            className={"max-w-36"}>
+                                    <Button disabled={!isTransformComplete} onClick={downloadVideo}>
                                         Download
                                         <DownloadIcon className={"ml-3"}/>
                                     </Button>
                                     <Button
-                                        className={"max-w-36"}
                                         onClick={transform}>
                                         Transform
                                         <MagicWandIcon className={"ml-3"}/>
                                     </Button>
-                                </div>
-                            </div>
-                            <div className="md:order-1">
-                                <div className="flex h-full flex-col space-y-4">
-                                    <VideoPlayer isUnplayable={isUnplayable}/>
                                 </div>
                             </div>
                         </div>

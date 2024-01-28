@@ -58,7 +58,6 @@ export const Trim = ({
             <DrawerTrigger asChild>
                 <Button
                     variant="outline"
-                    className={"max-w-36"}
                 >
                     Trim
                     <ScissorsIcon className={"ml-3"}/>
