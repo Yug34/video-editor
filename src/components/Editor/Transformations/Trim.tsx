@@ -10,7 +10,7 @@ import {
 import {Button} from "@/components/ui/button";
 import {useRef, useState} from "react";
 import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
-import {Slider} from "../ui/slider";
+import {Slider} from "../../ui/slider";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Loader} from "lucide-react";
 import {ScissorsIcon} from "@radix-ui/react-icons";

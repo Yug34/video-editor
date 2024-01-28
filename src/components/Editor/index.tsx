@@ -10,10 +10,10 @@ import ImageUpload from "../ImageUpload";
 import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
 import {downloadLinkedItem, isVideoFormatBrowserCompatible} from "@/util";
 import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
-import {Grayscale} from "@/components/Editor/Grayscale";
-import {Mute} from "@/components/Editor/Mute";
-import {Transcode} from "@/components/Editor/Transcode";
-import {Trim} from "./Trim";
+import {Grayscale} from "@/components/Editor/Transformations/Grayscale";
+import {Mute} from "@/components/Editor/Transformations/Mute";
+import {Transcode} from "@/components/Editor/Transformations/Transcode";
+import {Trim} from "./Transformations/Trim";
 import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 import {useVideoDataStore} from "@/store/VideoDataStore";
@@ -107,7 +107,7 @@ export const Editor = () => {
         await ffmpeg.writeFile(`input.${videoFormat}`, fileData);
 
         ffmpeg.on("log", ({message}) => {
-            let DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
+            const DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
             const msgToMatch = message.split(",")[0];
             if (msgToMatch.match(DurationPattern)) {
                 const splitMessage = msgToMatch.split(":");
