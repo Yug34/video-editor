@@ -15,7 +15,8 @@ import {Mute} from "@/components/Editor/Mute";
 import {Transcode} from "@/components/Editor/Transcode";
 import {Trim} from "./Trim";
 import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
-import {useTransformationsStore} from "@/store";
+import {useTransformationsStore} from "@/store/TransformationsStore";
+import {useVideoDataStore} from "@/store/VideoDataStore";
 
 export const Editor = () => {
     const ffmpegRef = useRef(new FFmpeg());
@@ -23,17 +24,17 @@ export const Editor = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    const [video, setVideo] = useState<Uint8Array | null>(null);
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
-    const [videoFormat, setVideoFormat] = useState<Format | null>(null);
-    const [videoDuration, setVideoDuration] =
-        useState<VideoDurationWrapper | null>(null);
-    const [sourceVideoURL, setSourceVideoURL] = useState<string | null>(null);
+    const {transformations, addTransformation, setIsTransformComplete, isTransformComplete} = useTransformationsStore();
 
-    const [isUnplayable, setIsUnplayable] = useState<boolean>(false);
+    const {
+        video, setVideo,
+        videoDuration, setVideoDuration,
+        videoFormat, setVideoFormat,
+        sourceVideoURL, setSourceVideoURL,
+        isLoaded, setIsLoaded,
+        isUnplayable, setIsUnplayable
+    } = useVideoDataStore();
 
-    const [isTransformComplete, setIsTransformComplete] =
-        useState<boolean>(false);
     const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
 
     const [videoConvertFormat, setVideoConvertFormat] = useState<Format | null>(
@@ -42,8 +43,6 @@ export const Editor = () => {
     const [videoConvertCodec, setVideoConvertCodec] = useState<Codec | null>(
         null
     );
-
-    const {transformations, addTransformation, removeTransformation} = useTransformationsStore();
 
     useEffect(() => {
         if (videoFormat) {
@@ -309,25 +308,17 @@ export const Editor = () => {
                                     <Grayscale/>
                                     <Mute/>
                                     <Transcode
-                                        videoFormat={videoFormat!}
                                         setVideoConvertFormat={setVideoConvertFormat}
                                         setVideoConvertCodec={setVideoConvertCodec}
                                         videoConvertFormat={videoConvertFormat!}
                                         videoConvertCodec={videoConvertCodec!}
-                                        addTransformation={addTransformation}
                                     />
-                                    <Trim
-                                        videoFormat={videoFormat!}
-                                        videoDuration={videoDuration!}
-                                        addTransformation={addTransformation}
-                                        sourceVideoURL={sourceVideoURL!}
-                                    />
+                                    <Trim/>
                                     <Button disabled={!isTransformComplete} onClick={downloadVideo}>
                                         Download
                                         <DownloadIcon className={"ml-3"}/>
                                     </Button>
-                                    <Button
-                                        onClick={transform}>
+                                    <Button onClick={transform}>
                                         Transform
                                         <MagicWandIcon className={"ml-3"}/>
                                     </Button>

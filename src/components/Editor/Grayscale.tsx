@@ -1,6 +1,6 @@
 import {Toggle} from "@/components/ui/toggle";
 import {MaskOnIcon} from "@radix-ui/react-icons";
-import {useTransformationsStore} from "@/store";
+import {useTransformationsStore} from "@/store/TransformationsStore";
 
 export const Grayscale = () => {
     const {addTransformation, removeTransformation} = useTransformationsStore();

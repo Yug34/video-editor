@@ -8,40 +8,31 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import {Button} from "@/components/ui/button";
-import {Format, Transformation} from "@/types";
 import {useRef, useState} from "react";
 import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
 import {Slider} from "../ui/slider";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Loader} from "lucide-react";
 import {ScissorsIcon} from "@radix-ui/react-icons";
+import {useVideoDataStore} from "@/store/VideoDataStore";
+import {useTransformationsStore} from "@/store/TransformationsStore";
 
-interface TrimProps {
-    videoFormat: Format;
-    videoDuration: VideoDurationWrapper;
-    sourceVideoURL: string;
-
-    addTransformation(transformation: Transformation): void;
-}
-
-export const Trim = ({
-                         addTransformation,
-                         videoDuration,
-                         sourceVideoURL
-                     }: TrimProps) => {
+export const Trim = () => {
     const [trimFromPercent, setTrimFromPercent] = useState<number>(30);
     const [trimToPercent, setTrimToPercent] = useState<number>(60);
     const [trimThumbnailPercent, setTrimThumbnailPercent] = useState<number>(45);
 
     const [isVideoLoading, setIsVideoLoading] = useState(false);
-
     const thumbnailVideoRef = useRef<HTMLVideoElement>(null);
 
+    const {videoDuration, sourceVideoURL} = useVideoDataStore();
+    const {addTransformation} = useTransformationsStore();
+
     const addTrimTransformation = () => {
-        const toSeconds = (trimToPercent / 100) * videoDuration.toSeconds();
+        const toSeconds = (trimToPercent / 100) * videoDuration!.toSeconds();
         const toTimeStamp = VideoDurationWrapper.fromSeconds(toSeconds);
 
-        const fromSeconds = (trimFromPercent / 100) * videoDuration.toSeconds();
+        const fromSeconds = (trimFromPercent / 100) * videoDuration!.toSeconds();
         const fromTimeStamp = VideoDurationWrapper.fromSeconds(fromSeconds);
 
         addTransformation({
@@ -79,7 +70,7 @@ export const Trim = ({
                                     className={"w-full h-full"}
                                     controls
                                     ref={thumbnailVideoRef}
-                                    src={sourceVideoURL + `#t=${videoDuration.toTimeStampAtPercent(trimFromPercent)},${videoDuration.toTimeStampAtPercent(trimToPercent)}`}
+                                    src={sourceVideoURL + `#t=${videoDuration!.toTimeStampAtPercent(trimFromPercent)},${videoDuration!.toTimeStampAtPercent(trimToPercent)}`}
                                 />
                             )}
                         </div>

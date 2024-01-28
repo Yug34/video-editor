@@ -1,6 +1,6 @@
 import {Toggle} from "@/components/ui/toggle";
 import {SpeakerOffIcon} from "@radix-ui/react-icons";
-import {useTransformationsStore} from "@/store";
+import {useTransformationsStore} from "@/store/TransformationsStore";
 
 export const Mute = () => {
     const {addTransformation, removeTransformation} = useTransformationsStore();

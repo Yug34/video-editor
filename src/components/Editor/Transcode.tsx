@@ -10,29 +10,29 @@ import {
 } from "@/components/ui/drawer";
 import {Button} from "@/components/ui/button";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
-import {Codec, Format, Transformation} from "@/types";
+import {Codec, Format} from "@/types";
 import {FORMAT_NAMES, FORMATS} from "@/constants";
 import {Dispatch, SetStateAction} from "react";
 import {MixIcon} from "@radix-ui/react-icons";
+import {useVideoDataStore} from "@/store/VideoDataStore";
+import {useTransformationsStore} from "@/store/TransformationsStore";
 
 interface TranscodeProps {
-    videoFormat: Format;
     setVideoConvertFormat: Dispatch<SetStateAction<Format | null>>;
     setVideoConvertCodec: Dispatch<SetStateAction<Codec | null>>;
     videoConvertFormat: Format;
     videoConvertCodec: Codec;
-
-    addTransformation(transformation: Transformation): void;
 }
 
 export const Transcode = ({
-                              videoFormat,
                               setVideoConvertFormat,
                               setVideoConvertCodec,
                               videoConvertFormat,
                               videoConvertCodec,
-                              addTransformation,
                           }: TranscodeProps) => {
+    const {videoFormat} = useVideoDataStore();
+    const {addTransformation} = useTransformationsStore();
+
     return (
         <Drawer>
             <DrawerTrigger asChild>
