@@ -28,7 +28,7 @@ export const Editor = () => {
 
     const {
         video, setVideo,
-        videoDuration, setVideoDuration,
+        setVideoDuration,
         videoFormat, setVideoFormat,
         sourceVideoURL, setSourceVideoURL,
         isLoaded, setIsLoaded,
