@@ -220,7 +220,7 @@ export const Editor = () => {
     };
 
     return (
-        <div>
+        <div className={"h-screen"}>
             {video && isFFmpegLoaded ? (
                 <div>
                     <div className="h-full py-6">
