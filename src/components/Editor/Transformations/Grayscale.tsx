@@ -12,7 +12,7 @@ export const Grayscale = () => {
 
     return (
         <Toggle
-            className={"w-full"}
+            className={"w-full min-w-fit"}
             aria-label="Toggle Video Grayscale"
             pressed={checkForTransformationType("Grayscale", transformations)}
             onPressedChange={() => {
@@ -23,7 +23,7 @@ export const Grayscale = () => {
                 }
             }}
         >
-            Grayscale
+            {checkForTransformationType("Grayscale", transformations) ? "Remove Grayscale" : "Add Grayscale"}
             <MaskOnIcon className={"ml-3"}/>
         </Toggle>
     )

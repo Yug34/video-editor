@@ -1,5 +1,5 @@
 import {Toggle} from "@/components/ui/toggle";
-import {SpeakerOffIcon} from "@radix-ui/react-icons";
+import {SpeakerLoudIcon, SpeakerOffIcon} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 
 export const Mute = () => {
@@ -23,8 +23,12 @@ export const Mute = () => {
                 }
             }}
         >
-            Mute
-            <SpeakerOffIcon className={"ml-3"}/>
+            {checkForTransformationType("Mute", transformations) ? "Unmute" : "Mute"}
+            {checkForTransformationType("Mute", transformations) ? (
+                <SpeakerLoudIcon className={"ml-3"}/>
+            ) : (
+                <SpeakerOffIcon className={"ml-3"}/>
+            )}
         </Toggle>
     )
 }

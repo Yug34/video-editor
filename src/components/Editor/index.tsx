@@ -234,8 +234,7 @@ export const Editor = () => {
                             <DropdownMenu>
                                 <DropdownMenuTrigger>
                                     <Button
-                                        className={"min-w-20 rounded-none rounded-tl-lg border-y-0 border-l-0 border-r lg:hidden focus:outline-none"}
-                                        variant={"outline"}
+                                        className={"min-w-20 rounded-none rounded-tl-md border-y-0 border-l-0 border-r lg:hidden focus:outline-none"}
                                     >
                                         Edit Image
                                         <Pencil2Icon className={"ml-2"}/>
@@ -270,7 +269,7 @@ export const Editor = () => {
                                     <MagicWandIcon className={"ml-3"}/>
                                 </Button>
                                 <Button disabled={!isTransformComplete} onClick={downloadVideo}
-                                        className={"rounded-none rounded-tr-lg"}>
+                                        className={"rounded-none rounded-tr-md"}>
                                     Download
                                     <DownloadIcon className={"ml-3"}/>
                                 </Button>
@@ -281,7 +280,7 @@ export const Editor = () => {
                             style={{marginTop: "0px", marginBottom: "16px"}} // className styles weren't working, FIXME!
                             className={"hidden border-b lg:flex lg:justify-between"}
                         >
-                            <div>
+                            <div className={"flex"}>
                                 <Grayscale/>
                                 <Mute/>
                                 <Transcode
@@ -300,7 +299,7 @@ export const Editor = () => {
                                 <Button
                                     disabled={!isTransformComplete}
                                     onClick={downloadVideo}
-                                    className={"rounded-none rounded-tr-lg"}
+                                    className={"rounded-none rounded-tr-md"}
                                 >
                                     Download
                                     <DownloadIcon className={"ml-3"}/>
