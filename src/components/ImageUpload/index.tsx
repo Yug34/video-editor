@@ -162,14 +162,14 @@ export default function ImageUpload({fileInputRef}: ImageUploadProps) {
                     </div>
 
                     <div className="flex gap-x-4 max-w-full px-2 pt-4">
-                        {["bunny.mp4", "rickroll.mp4", "yee.mp4"].map((videoSource: string) => (
+                        {["/videos/bunny.mp4", "/videos/rickroll.mp4", "/videos/yee.mp4"].map((videoSource: string) => (
                             <video
                                 key={videoSource}
                                 autoPlay={true}
                                 loop={true}
                                 muted={true}
                                 className={"max-w-[200px] rounded-lg cursor-pointer hover:brightness-[1.15]"}
-                                src={`/videos/${videoSource}`}
+                                src={videoSource}
                                 onClick={async () => {
                                     if (isFFmpegLoaded) {
                                         await initialize(videoSource);

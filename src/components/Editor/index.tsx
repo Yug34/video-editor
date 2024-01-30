@@ -36,8 +36,6 @@ export const Editor = () => {
         isUnplayable, setIsUnplayable
     } = useVideoDataStore();
 
-    const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
-
     const [videoConvertFormat, setVideoConvertFormat] = useState<Format | null>(
         null
     );
@@ -216,7 +214,6 @@ export const Editor = () => {
 
     const downloadVideo = () => {
         downloadLinkedItem(`output.${videoFormat}`, sourceVideoURL!);
-        setIsDownloaded(true);
     };
 
     return (
