@@ -6,6 +6,10 @@ import {Label} from "@/components/ui/label";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {UploadIcon} from "lucide-react";
 import {useFfmpegDataStore} from "@/store/FFmpegStore";
+import {Format, VideoDuration} from "@/types";
+import {fetchFile} from "@ffmpeg/util";
+import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
+import {useVideoDataStore} from "@/store/VideoDataStore";
 
 const Loader = () => (
     <svg
@@ -46,15 +50,60 @@ const LoadedCheck = () => (
 
 interface ImageUploadProps {
     fileInputRef: RefObject<HTMLInputElement>;
-
-    initialize(input: ChangeEvent | string): Promise<void>;
 }
 
 export default function ImageUpload({
-                                        initialize,
                                         fileInputRef,
                                     }: ImageUploadProps) {
-    const {isFFmpegLoaded} = useFfmpegDataStore();
+    const {isFFmpegLoaded, FFmpeg} = useFfmpegDataStore();
+    const {setVideoFormat, setVideoDuration, setVideo, setSourceVideoURL} = useVideoDataStore();
+
+    const initialize = async (input: ChangeEvent | string) => {
+        let fileData: Uint8Array;
+        let videoFormat: Format;
+
+        // Handle Preloaded video case and ChangeEvent case differently
+        if (typeof input === "string") {
+            videoFormat = "mp4";
+            setVideoFormat(videoFormat);
+            fileData = await fetchFile(input);
+        } else {
+            const file = (input.target as HTMLInputElement)!.files![0];
+            videoFormat = file.type.split("/")[1] as Format;
+            setVideoFormat(videoFormat);
+            fileData = await fetchFile(file);
+        }
+
+        await FFmpeg!.writeFile(`input.${videoFormat}`, fileData);
+
+        FFmpeg!.on("log", ({message}) => {
+            const DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
+            const msgToMatch = message.split(",")[0];
+            if (msgToMatch.match(DurationPattern)) {
+                const splitMessage = msgToMatch.split(":");
+                let timeStamps = splitMessage.splice(1, splitMessage.length);
+                timeStamps = timeStamps.map((timeStamp) => timeStamp.trim());
+                const videoDuration: VideoDuration = {
+                    hours: parseInt(timeStamps[0]),
+                    minutes: parseInt(timeStamps[1]),
+                    seconds: parseInt(timeStamps[2]),
+                };
+                setVideoDuration(VideoDurationWrapper.fromVideoDuration(videoDuration));
+            }
+        });
+
+        // Does nothing, just getting the metadata of the video.
+        await FFmpeg!.exec([`-i`, `input.${videoFormat}`]);
+
+        FFmpeg!.readFile(`input.${videoFormat}`).then((videoData) => {
+            const videoURL = URL.createObjectURL(
+                new Blob([videoData], {type: `video/${videoFormat}`})
+            );
+            setSourceVideoURL(videoURL);
+        });
+
+        setVideo(fileData);
+    };
 
     return (
         <Card>

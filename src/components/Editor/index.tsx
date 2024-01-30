@@ -1,8 +1,7 @@
-import {ChangeEvent, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
-import {fetchFile} from "@ffmpeg/util";
 import {CODECS, FORMAT_NAMES, FORMATS} from "@/constants";
 import ImageUpload from "../ImageUpload";
 import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
@@ -18,7 +17,6 @@ import {useVideoDataStore} from "@/store/VideoDataStore";
 import {useFfmpegDataStore} from "@/store/FFmpegStore";
 
 export const Editor = () => {
-    const messageRef = useRef<HTMLParagraphElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -64,53 +62,6 @@ export const Editor = () => {
             });
         }
     }, [video, isFFmpegLoaded]);
-
-    const initialize = async (input: ChangeEvent | string) => {
-        let fileData: Uint8Array;
-        let videoFormat: Format;
-
-        // Handle Preloaded video case and ChangeEvent case differently
-        if (typeof input === "string") {
-            videoFormat = "mp4";
-            setVideoFormat(videoFormat);
-            fileData = await fetchFile(input);
-        } else {
-            const file = (input.target as HTMLInputElement)!.files![0];
-            videoFormat = file.type.split("/")[1] as Format;
-            setVideoFormat(videoFormat);
-            fileData = await fetchFile(file);
-        }
-
-        await FFmpeg!.writeFile(`input.${videoFormat}`, fileData);
-
-        FFmpeg!.on("log", ({message}) => {
-            const DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
-            const msgToMatch = message.split(",")[0];
-            if (msgToMatch.match(DurationPattern)) {
-                const splitMessage = msgToMatch.split(":");
-                let timeStamps = splitMessage.splice(1, splitMessage.length);
-                timeStamps = timeStamps.map((timeStamp) => timeStamp.trim());
-                const videoDuration: VideoDuration = {
-                    hours: parseInt(timeStamps[0]),
-                    minutes: parseInt(timeStamps[1]),
-                    seconds: parseInt(timeStamps[2]),
-                };
-                setVideoDuration(VideoDurationWrapper.fromVideoDuration(videoDuration));
-            }
-        });
-
-        // Does nothing, just getting the metadata of the video.
-        await FFmpeg!.exec([`-i`, `input.${videoFormat}`]);
-
-        FFmpeg!.readFile(`input.${videoFormat}`).then((videoData) => {
-            const videoURL = URL.createObjectURL(
-                new Blob([videoData], {type: `video/${videoFormat}`})
-            );
-            setSourceVideoURL(videoURL);
-        });
-
-        setVideo(fileData);
-    };
 
     const transcode = async (
         toFormat: Format,
@@ -297,13 +248,9 @@ export const Editor = () => {
                             </div>
                         </div>
                     </div>
-                    <p ref={messageRef}></p>
                 </div>
             ) : (
-                <ImageUpload
-                    fileInputRef={fileInputRef}
-                    initialize={initialize}
-                />
+                <ImageUpload fileInputRef={fileInputRef}/>
             )}
         </div>
     );
