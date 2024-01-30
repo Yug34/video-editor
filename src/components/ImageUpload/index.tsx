@@ -5,6 +5,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {UploadIcon} from "lucide-react";
+import {useFfmpegDataStore} from "@/store/FFmpegStore";
 
 const Loader = () => (
     <svg
@@ -45,7 +46,6 @@ const LoadedCheck = () => (
 
 interface ImageUploadProps {
     fileInputRef: RefObject<HTMLInputElement>;
-    isFFmpegLoaded: boolean;
 
     initialize(input: ChangeEvent | string): Promise<void>;
 }
@@ -53,8 +53,9 @@ interface ImageUploadProps {
 export default function ImageUpload({
                                         initialize,
                                         fileInputRef,
-                                        isFFmpegLoaded,
                                     }: ImageUploadProps) {
+    const {isFFmpegLoaded} = useFfmpegDataStore();
+
     return (
         <Card>
             <CardHeader>

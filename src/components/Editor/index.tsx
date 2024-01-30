@@ -2,9 +2,7 @@ import {ChangeEvent, useEffect, useRef, useState} from "react";
 
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
-
-import {FFmpeg} from "@ffmpeg/ffmpeg";
-import {fetchFile, toBlobURL} from "@ffmpeg/util";
+import {fetchFile} from "@ffmpeg/util";
 import {CODECS, FORMAT_NAMES, FORMATS} from "@/constants";
 import ImageUpload from "../ImageUpload";
 import {Codec, Format, Transformation, TransformationTypes, VideoDuration,} from "@/types";
@@ -17,21 +15,22 @@ import {Trim} from "./Transformations/Trim";
 import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 import {useVideoDataStore} from "@/store/VideoDataStore";
+import {useFfmpegDataStore} from "@/store/FFmpegStore";
 
 export const Editor = () => {
-    const ffmpegRef = useRef(new FFmpeg());
     const messageRef = useRef<HTMLParagraphElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    const {transformations, addTransformation, setIsTransformComplete, isTransformComplete} = useTransformationsStore();
+    const {transformations, setIsTransformComplete, isTransformComplete} = useTransformationsStore();
+
+    const {FFmpeg, isFFmpegLoaded, setIsFFmpegLoaded} = useFfmpegDataStore();
 
     const {
         video, setVideo,
         setVideoDuration,
         videoFormat, setVideoFormat,
         sourceVideoURL, setSourceVideoURL,
-        isLoaded, setIsLoaded,
         isUnplayable, setIsUnplayable
     } = useVideoDataStore();
 
@@ -55,12 +54,8 @@ export const Editor = () => {
     }, [videoFormat]);
 
     useEffect(() => {
-        load();
-    }, []);
-
-    useEffect(() => {
-        if (video && isLoaded) {
-            ffmpegRef.current.on("log", ({message}) => {
+        if (video && isFFmpegLoaded) {
+            FFmpeg!.on("log", ({message}) => {
                 toast("FFmpeg Logs", {
                     description: message,
                     id: "progressToast",
@@ -68,27 +63,9 @@ export const Editor = () => {
                 });
             });
         }
-    }, [video, isLoaded]);
-
-    const load = async () => {
-        const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
-        const ffmpeg = ffmpegRef.current;
-
-        // toBlobURL is used to bypass CORS issue, urls with the same
-        // domain can be used directly.
-        await ffmpeg.load({
-            coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-            wasmURL: await toBlobURL(
-                `${baseURL}/ffmpeg-core.wasm`,
-                "application/wasm"
-            ),
-        });
-
-        setIsLoaded(true);
-    };
+    }, [video, isFFmpegLoaded]);
 
     const initialize = async (input: ChangeEvent | string) => {
-        const ffmpeg = ffmpegRef.current;
         let fileData: Uint8Array;
         let videoFormat: Format;
 
@@ -104,9 +81,9 @@ export const Editor = () => {
             fileData = await fetchFile(file);
         }
 
-        await ffmpeg.writeFile(`input.${videoFormat}`, fileData);
+        await FFmpeg!.writeFile(`input.${videoFormat}`, fileData);
 
-        ffmpeg.on("log", ({message}) => {
+        FFmpeg!.on("log", ({message}) => {
             const DurationPattern = /DURATION *: \d+:\d+:\d+.?\d*(?=,*)/gi;
             const msgToMatch = message.split(",")[0];
             if (msgToMatch.match(DurationPattern)) {
@@ -123,9 +100,9 @@ export const Editor = () => {
         });
 
         // Does nothing, just getting the metadata of the video.
-        await ffmpeg.exec([`-i`, `input.${videoFormat}`]);
+        await FFmpeg!.exec([`-i`, `input.${videoFormat}`]);
 
-        ffmpeg.readFile(`input.${videoFormat}`).then((videoData) => {
+        FFmpeg!.readFile(`input.${videoFormat}`).then((videoData) => {
             const videoURL = URL.createObjectURL(
                 new Blob([videoData], {type: `video/${videoFormat}`})
             );
@@ -140,8 +117,7 @@ export const Editor = () => {
         toCodec: Codec,
         fromFormat?: Format
     ) => {
-        const ffmpeg = ffmpegRef.current;
-        await ffmpeg.exec(
+        await FFmpeg!.exec(
             `-i input.${fromFormat ?? videoFormat} -threads 4 -strict -2 -c:v ${
                 CODECS[toCodec].ffmpegLib
             } input.${toFormat}`.split(" ")
@@ -149,35 +125,32 @@ export const Editor = () => {
 
         setIsUnplayable(!isVideoFormatBrowserCompatible(toFormat));
 
-        await ffmpeg.deleteFile(`input.${fromFormat ?? videoFormat}`);
+        await FFmpeg!.deleteFile(`input.${fromFormat ?? videoFormat}`);
         setVideoFormat(toFormat);
     };
 
     const grayscale = async (format: Format) => {
-        const ffmpeg = ffmpegRef.current;
-
         // WebM weirdness. Does not work on FFmpeg itself.
         // Converting WebM to MP4, applying filter, then converting back:
         if (format === "webm") {
             await transcode("mp4", "h264");
-            await ffmpeg.exec(`-i input.mp4 -vf format=gray output.mp4`.split(" "));
-            await ffmpeg.deleteFile("input.mp4");
-            await ffmpeg.rename("output.mp4", "input.mp4");
+            await FFmpeg!.exec(`-i input.mp4 -vf format=gray output.mp4`.split(" "));
+            await FFmpeg!.deleteFile("input.mp4");
+            await FFmpeg!.rename("output.mp4", "input.mp4");
             await transcode(format, "vp8", "mp4");
         } else {
-            await ffmpeg.exec(
+            await FFmpeg!.exec(
                 `-i input.${format} -vf format=gray output.${format}`.split(" ")
             );
-            await ffmpeg.rename(`output.${format}`, `input.${format}`);
+            await FFmpeg!.rename(`output.${format}`, `input.${format}`);
         }
     };
 
     const mute = async (format: Format) => {
-        const ffmpeg = ffmpegRef.current;
-        await ffmpeg.exec(
+        await FFmpeg!.exec(
             `-i input.${format} -vcodec copy -an output.${format}`.split(" ")
         );
-        await ffmpeg.rename(`output.${format}`, `input.${format}`);
+        await FFmpeg!.rename(`output.${format}`, `input.${format}`);
     };
 
     const trim = async (
@@ -199,13 +172,12 @@ export const Editor = () => {
                 ).toString()
                 : VideoDurationWrapper.subtract(to, from).toString();
 
-        const ffmpeg = ffmpegRef.current;
-        await ffmpeg.exec(
+        await FFmpeg!.exec(
             `-ss ${startTimestamp} -i input.${format} -t ${endTimeStamp} -c copy output.${videoFormat}`.split(
                 " "
             )
         );
-        await ffmpeg.rename(`output.${format}`, `input.${format}`);
+        await FFmpeg!.rename(`output.${format}`, `input.${format}`);
     };
 
     const transform = async () => {
@@ -255,8 +227,7 @@ export const Editor = () => {
             }
         }
 
-        const ffmpeg = ffmpegRef.current;
-        const data = await ffmpeg.readFile(`input.${format}`);
+        const data = await FFmpeg!.readFile(`input.${format}`);
         const videoURL = URL.createObjectURL(
             new Blob([data], {type: `video/${format}`})
         );
@@ -296,7 +267,7 @@ export const Editor = () => {
 
     return (
         <div>
-            {video && isLoaded ? (
+            {video && isFFmpegLoaded ? (
                 <div>
                     <div className="h-full py-6">
                         <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
@@ -330,7 +301,6 @@ export const Editor = () => {
                 </div>
             ) : (
                 <ImageUpload
-                    isFFmpegLoaded={isLoaded}
                     fileInputRef={fileInputRef}
                     initialize={initialize}
                 />

@@ -5,8 +5,6 @@ import {VideoDurationWrapper} from "@/util/videoDurationWrapper";
 interface VideoDataStoreState {
     video: Uint8Array | null
     setVideo: (video: Uint8Array) => void
-    isLoaded: boolean
-    setIsLoaded: (value: boolean) => void
     videoFormat: Format | null
     setVideoFormat: (format: Format) => void
     videoDuration: VideoDurationWrapper | null
@@ -20,8 +18,6 @@ interface VideoDataStoreState {
 export const useVideoDataStore = create<VideoDataStoreState>()((set) => ({
     video: null,
     setVideo: (video: Uint8Array) => set(() => ({video: video})),
-    isLoaded: false,
-    setIsLoaded: (value: boolean) => set(() => ({isLoaded: value})),
     videoFormat: null,
     setVideoFormat: (format: Format) => set(() => ({videoFormat: format})),
     videoDuration: null,
