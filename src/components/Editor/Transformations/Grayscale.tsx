@@ -12,6 +12,7 @@ export const Grayscale = () => {
 
     return (
         <Toggle
+            className={"w-full"}
             aria-label="Toggle Video Grayscale"
             pressed={checkForTransformationType("Grayscale", transformations)}
             onPressedChange={() => {

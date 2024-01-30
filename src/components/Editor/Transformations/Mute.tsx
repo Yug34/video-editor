@@ -12,6 +12,7 @@ export const Mute = () => {
 
     return (
         <Toggle
+            className={"w-full"}
             aria-label="Toggle Video Grayscale"
             pressed={checkForTransformationType("Mute", transformations)}
             onPressedChange={(pressed: boolean) => {

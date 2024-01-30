@@ -48,6 +48,7 @@ export const Trim = () => {
         <Drawer>
             <DrawerTrigger asChild>
                 <Button
+                    className={"w-full"}
                     variant="outline"
                 >
                     Trim

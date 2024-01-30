@@ -11,11 +11,19 @@ import {Grayscale} from "@/components/Editor/Transformations/Grayscale";
 import {Mute} from "@/components/Editor/Transformations/Mute";
 import {Transcode} from "@/components/Editor/Transformations/Transcode";
 import {Trim} from "./Transformations/Trim";
-import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
+import {DownloadIcon, MagicWandIcon, Pencil2Icon} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 import {useVideoDataStore} from "@/store/VideoDataStore";
 import {useFfmpegDataStore} from "@/store/FFmpegStore";
-import {Card, CardContent} from "@/components/ui/card";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Editor = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -220,14 +228,60 @@ export const Editor = () => {
     return (
         <div className={"flex flex-col h-screen justify-center items-center"}>
             {video && isFFmpegLoaded ? (
-                <Card>
-                    <CardContent className={"flex justify-center items-center p-8 gap-x-4"}>
-                        <div
-                            className={"flex justify-center items-center w-[70vw] h-[70vh] max-w-[70vw] max-h-[70vh]"}>
-                            <VideoPlayer isUnplayable={isUnplayable}/>
-                        </div>
-                        <div className="flex flex-col h-full max-w-40">
-                            <div className="flex flex-col mb-auto">
+                <Card className={"p-0"}>
+                    <CardHeader className={"p-0"}>
+                        <CardTitle className={"flex justify-between mb-4 border-b lg:hidden"}>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Button
+                                        className={"min-w-20 rounded-none rounded-tl-lg border-y-0 border-l-0 border-r lg:hidden focus:outline-none"}
+                                        variant={"outline"}
+                                    >
+                                        Edit Image
+                                        <Pencil2Icon className={"ml-2"}/>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>Select an edit to make</DropdownMenuLabel>
+                                    <DropdownMenuSeparator/>
+                                    <DropdownMenuItem className={"p-0"}>
+                                        <Grayscale/>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className={"p-0"}>
+                                        <Mute/>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator/>
+                                    <DropdownMenuItem className={"p-0"}>
+                                        <Transcode
+                                            setVideoConvertFormat={setVideoConvertFormat}
+                                            setVideoConvertCodec={setVideoConvertCodec}
+                                            videoConvertFormat={videoConvertFormat!}
+                                            videoConvertCodec={videoConvertCodec!}
+                                        />
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className={"p-0"}>
+                                        <Trim/>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <div>
+                                <Button onClick={transform} className={"rounded-none"}>
+                                    Apply Edits
+                                    <MagicWandIcon className={"ml-3"}/>
+                                </Button>
+                                <Button disabled={!isTransformComplete} onClick={downloadVideo}
+                                        className={"rounded-none rounded-tr-lg"}>
+                                    Download
+                                    <DownloadIcon className={"ml-3"}/>
+                                </Button>
+                            </div>
+                        </CardTitle>
+
+                        <CardTitle
+                            style={{marginTop: "0px", marginBottom: "16px"}} // className styles weren't working, FIXME!
+                            className={"hidden border-b lg:flex lg:justify-between"}
+                        >
+                            <div>
                                 <Grayscale/>
                                 <Mute/>
                                 <Transcode
@@ -238,16 +292,26 @@ export const Editor = () => {
                                 />
                                 <Trim/>
                             </div>
-                            <div className="flex flex-col">
-                                <Button disabled={!isTransformComplete} onClick={downloadVideo}>
+                            <div>
+                                <Button onClick={transform} className={"rounded-none"}>
+                                    Apply Edits
+                                    <MagicWandIcon className={"ml-3"}/>
+                                </Button>
+                                <Button
+                                    disabled={!isTransformComplete}
+                                    onClick={downloadVideo}
+                                    className={"rounded-none rounded-tr-lg"}
+                                >
                                     Download
                                     <DownloadIcon className={"ml-3"}/>
                                 </Button>
-                                <Button onClick={transform}>
-                                    Transform
-                                    <MagicWandIcon className={"ml-3"}/>
-                                </Button>
                             </div>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className={"flex justify-center items-center p-8 gap-x-4"}>
+                        <div
+                            className={"flex justify-center items-center w-[70vw] h-[70vh] max-w-[70vw] max-h-[70vh]"}>
+                            <VideoPlayer isUnplayable={isUnplayable}/>
                         </div>
                     </CardContent>
                 </Card>
