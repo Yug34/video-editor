@@ -3,16 +3,22 @@ import {MaskOnIcon} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 
 export const Grayscale = () => {
-    const {addTransformation, removeTransformation} = useTransformationsStore();
+    const {
+        addTransformation,
+        removeTransformation,
+        checkForTransformationType,
+        transformations
+    } = useTransformationsStore();
 
     return (
         <Toggle
             aria-label="Toggle Video Grayscale"
-            onPressedChange={(pressed: boolean) => {
-                if (pressed) {
-                    addTransformation({type: "Grayscale"});
-                } else {
+            pressed={checkForTransformationType("Grayscale", transformations)}
+            onPressedChange={() => {
+                if (checkForTransformationType("Grayscale", transformations)) {
                     removeTransformation("Grayscale");
+                } else {
+                    addTransformation({type: "Grayscale"});
                 }
             }}
         >

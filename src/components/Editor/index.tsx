@@ -20,13 +20,17 @@ export const Editor = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    const {transformations, setIsTransformComplete, isTransformComplete} = useTransformationsStore();
+    const {
+        transformations,
+        setIsTransformComplete,
+        isTransformComplete,
+        clearTransformations
+    } = useTransformationsStore();
 
     const {FFmpeg, isFFmpegLoaded, setIsFFmpegLoaded} = useFfmpegDataStore();
 
     const {
-        video, setVideo,
-        setVideoDuration,
+        video,
         videoFormat, setVideoFormat,
         sourceVideoURL, setSourceVideoURL,
         isUnplayable, setIsUnplayable
@@ -43,9 +47,7 @@ export const Editor = () => {
 
     useEffect(() => {
         if (videoFormat) {
-            const videoConvertFormat = FORMAT_NAMES.filter(
-                (format) => format !== videoFormat
-            )[0] as Format;
+            const videoConvertFormat = FORMAT_NAMES.filter((format) => format !== videoFormat)[0] as Format;
             setVideoConvertFormat(videoConvertFormat);
             setVideoConvertCodec(FORMATS[videoConvertFormat].codecs[0] as Codec);
         }
@@ -184,6 +186,7 @@ export const Editor = () => {
         );
         setSourceVideoURL(videoURL);
         setIsTransformComplete(true);
+        clearTransformations();
     };
 
     const VideoPlayer = ({isUnplayable}: { isUnplayable: boolean }) => {
