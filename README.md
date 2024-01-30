@@ -2,7 +2,7 @@
 
 A video editor that edits your videos on the client-side.
 
-Made with `FFmpeg.wasm`. And no other dependencies (except `styled-components`).
+Made with `FFmpeg.wasm`.
 
 Boilerplate generated with `create-react-app`.
 
@@ -20,7 +20,6 @@ Boilerplate generated with `create-react-app`.
 - TODOs:
     - Compress video
     - Add custom audio
-    - Overlay custom audio on current audio
     - Slow motion / timelapse video
 
 ### Formats and Codecs supported:
@@ -51,7 +50,6 @@ Boilerplate generated with `create-react-app`.
                 }
             }
           ```
-- `Modal.tsx`: Handles adding/updating new transformations to the `transformations` array.
 
 # Locally hosting:
 

@@ -30,7 +30,6 @@ export const useTransformationsStore = create<TransformationsStoreState>()((set)
                 return true;
             }
         }
-
         return false;
     }
 }));

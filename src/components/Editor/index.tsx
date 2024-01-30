@@ -15,6 +15,7 @@ import {DownloadIcon, MagicWandIcon} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 import {useVideoDataStore} from "@/store/VideoDataStore";
 import {useFfmpegDataStore} from "@/store/FFmpegStore";
+import {Card, CardContent} from "@/components/ui/card";
 
 export const Editor = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -189,9 +190,9 @@ export const Editor = () => {
 
     const VideoPlayer = ({isUnplayable}: { isUnplayable: boolean }) => {
         return (
-            <div className={"relative flex justify-center items-center h-90 max-h-90 rounded-md"}>
+            <div className={"relative flex justify-center items-center rounded-md h-full w-full"}>
                 <video
-                    className={"w-full"}
+                    className={"w-full h-full"}
                     ref={videoRef}
                     controls
                     src={sourceVideoURL!}
@@ -217,38 +218,39 @@ export const Editor = () => {
     };
 
     return (
-        <div className={"h-screen"}>
+        <div className={"flex flex-col h-screen justify-center items-center"}>
             {video && isFFmpegLoaded ? (
-                <div>
-                    <div className="h-full py-6">
-                        <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-                            <div className="flex w-full h-full flex-col space-y-4">
-                                <VideoPlayer isUnplayable={isUnplayable}/>
+                <Card>
+                    <CardContent className={"flex justify-center items-center p-8 gap-x-4"}>
+                        <div
+                            className={"flex justify-center items-center w-[70vw] h-[70vh] max-w-[70vw] max-h-[70vh]"}>
+                            <VideoPlayer isUnplayable={isUnplayable}/>
+                        </div>
+                        <div className="flex flex-col h-full max-w-40">
+                            <div className="flex flex-col mb-auto">
+                                <Grayscale/>
+                                <Mute/>
+                                <Transcode
+                                    setVideoConvertFormat={setVideoConvertFormat}
+                                    setVideoConvertCodec={setVideoConvertCodec}
+                                    videoConvertFormat={videoConvertFormat!}
+                                    videoConvertCodec={videoConvertCodec!}
+                                />
+                                <Trim/>
                             </div>
-                            <div className="flex flex-col space-y-4 max-w-36">
-                                <div className="flex flex-col h-full max-w-36">
-                                    <Grayscale/>
-                                    <Mute/>
-                                    <Transcode
-                                        setVideoConvertFormat={setVideoConvertFormat}
-                                        setVideoConvertCodec={setVideoConvertCodec}
-                                        videoConvertFormat={videoConvertFormat!}
-                                        videoConvertCodec={videoConvertCodec!}
-                                    />
-                                    <Trim/>
-                                    <Button disabled={!isTransformComplete} onClick={downloadVideo}>
-                                        Download
-                                        <DownloadIcon className={"ml-3"}/>
-                                    </Button>
-                                    <Button onClick={transform}>
-                                        Transform
-                                        <MagicWandIcon className={"ml-3"}/>
-                                    </Button>
-                                </div>
+                            <div className="flex flex-col">
+                                <Button disabled={!isTransformComplete} onClick={downloadVideo}>
+                                    Download
+                                    <DownloadIcon className={"ml-3"}/>
+                                </Button>
+                                <Button onClick={transform}>
+                                    Transform
+                                    <MagicWandIcon className={"ml-3"}/>
+                                </Button>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             ) : (
                 <ImageUpload fileInputRef={fileInputRef}/>
             )}
