@@ -338,9 +338,7 @@ export const Editor = () => {
             >
               <div className={"flex"}>
                 {transformationComponents.map((el) => (
-                  <React.Fragment key={el.type}>
-                    {el.el}
-                  </React.Fragment>
+                  <React.Fragment key={el.type}>{el.el}</React.Fragment>
                 ))}
               </div>
               <div>
