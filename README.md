@@ -1,10 +1,8 @@
 # Client-sided video editor
 
-A video editor that edits your videos on the client-side.
+A video editor that lets you edit your videos on the client-side.
 
-Made with `FFmpeg.wasm`.
-
-Boilerplate generated with `create-react-app`.
+Made with `FFmpeg.wasm` and `shadcn/ui`.
 
 > [!NOTE]
 > The formats `.wmv` and `.avi` are not playable by browsers. So the editor does work, but won't be able to display the
@@ -36,7 +34,7 @@ Boilerplate generated with `create-react-app`.
     - Main state variable is `transformations: Transformation[]`. The following is the `Transformation` type. Reading
       this will probably let your intuition figure out the core logic of the application.
         - ```typescript
-            type TransformationTypes = "Convert" | "Grayscale" | "Trim" | "Mute";
+            type TransformationTypes = "Convert" | "Grayscale" | "Trim" | "Mute" | "Compress";
         
             type Transformation = {
                 type: TransformationTypes;
