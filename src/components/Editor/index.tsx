@@ -333,12 +333,12 @@ export const Editor = () => {
                     </CardContent>
                     <CardFooter className="p-0">
                         <Button
-                            variant={"secondary"}
+                            variant={"outline"}
                             disabled={!isTransformComplete}
                             onClick={downloadVideo}
                             className={"w-full rounded-none rounded-b-lg border-x-0 border-b-0 border-t"}
                         >
-                            Download
+                            {!isTransformComplete ? "Edit video to download" : "Download"}
                             <DownloadIcon className={"ml-3"}/>
                         </Button>
                     </CardFooter>
