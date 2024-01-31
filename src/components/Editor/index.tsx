@@ -295,7 +295,7 @@ export const Editor = () => {
                                     {transformationComponents.map((el) => (
                                         <DropdownMenuItem
                                             key={el.type}
-                                            className={"p-0"}
+                                            className={"p-0 my-1"}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                             }}
