@@ -15,7 +15,7 @@ import {DownloadIcon, MagicWandIcon, Pencil2Icon,} from "@radix-ui/react-icons";
 import {useTransformationsStore} from "@/store/TransformationsStore";
 import {useVideoDataStore} from "@/store/VideoDataStore";
 import {useFfmpegDataStore} from "@/store/FFmpegStore";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -305,20 +305,10 @@ export const Editor = () => {
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <div>
-                                <Button onClick={transform} className={"rounded-none"}>
-                                    Apply Edits
-                                    <MagicWandIcon className={"ml-3"}/>
-                                </Button>
-                                <Button
-                                    disabled={!isTransformComplete}
-                                    onClick={downloadVideo}
-                                    className={"rounded-none rounded-tr-md"}
-                                >
-                                    Download
-                                    <DownloadIcon className={"ml-3"}/>
-                                </Button>
-                            </div>
+                            <Button onClick={transform} className={"rounded-none rounded-tr-md"}>
+                                Apply Edits
+                                <MagicWandIcon className={"ml-3"}/>
+                            </Button>
                         </CardTitle>
 
                         <CardTitle
@@ -330,20 +320,10 @@ export const Editor = () => {
                                     <React.Fragment key={el.type}>{el.el}</React.Fragment>
                                 ))}
                             </div>
-                            <div>
-                                <Button onClick={transform} className={"rounded-none"}>
-                                    Apply Edits
-                                    <MagicWandIcon className={"ml-3"}/>
-                                </Button>
-                                <Button
-                                    disabled={!isTransformComplete}
-                                    onClick={downloadVideo}
-                                    className={"rounded-none rounded-tr-md"}
-                                >
-                                    Download
-                                    <DownloadIcon className={"ml-3"}/>
-                                </Button>
-                            </div>
+                            <Button onClick={transform} className={"rounded-none rounded-tr-md"}>
+                                Apply Edits
+                                <MagicWandIcon className={"ml-3"}/>
+                            </Button>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className={"flex justify-center items-center p-8 gap-x-4"}>
@@ -351,6 +331,17 @@ export const Editor = () => {
                             <VideoPlayer isUnplayable={isUnplayable}/>
                         </div>
                     </CardContent>
+                    <CardFooter className="p-0">
+                        <Button
+                            variant={"secondary"}
+                            disabled={!isTransformComplete}
+                            onClick={downloadVideo}
+                            className={"w-full rounded-none rounded-b-lg border-x-0 border-b-0 border-t"}
+                        >
+                            Download
+                            <DownloadIcon className={"ml-3"}/>
+                        </Button>
+                    </CardFooter>
                 </Card>
             ) : (
                 <ImageUpload fileInputRef={fileInputRef}/>
