@@ -65,12 +65,12 @@ export const Transcode = ({
         <Drawer>
             <DrawerTrigger asChild>
                 <Button
-                    variant="outline"
+                    variant={checkForTransformationType("Convert", transformations) ? "destructive" : "outline"}
                     className={
                         "w-full md:rounded-none md:border-b-0 md:border-t-0 md:border-l-0 md:border-r"
                     }
                 >
-                    Transcode
+                    {checkForTransformationType("Convert", transformations) ? "Remove Transcode" : "Transcode"}
                     <MixIcon className={"ml-3"}/>
                 </Button>
             </DrawerTrigger>

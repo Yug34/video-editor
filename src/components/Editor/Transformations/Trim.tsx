@@ -70,12 +70,12 @@ export const Trim = () => {
         <Drawer>
             <DrawerTrigger asChild>
                 <Button
-                    variant="outline"
+                    variant={checkForTransformationType("Trim", transformations) ? "destructive" : "outline"}
                     className={
                         "w-full md:rounded-none md:border-b-0 md:border-t-0 md:border-l-0 md:border-r"
                     }
                 >
-                    Trim
+                    {checkForTransformationType("Trim", transformations) ? "Remove Trim" : "Trim"}
                     <ScissorsIcon className={"ml-3"}/>
                 </Button>
             </DrawerTrigger>
