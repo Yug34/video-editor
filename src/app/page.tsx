@@ -4,6 +4,7 @@ import {Editor} from "@/components/Editor";
 import {toBlobURL} from "@ffmpeg/util";
 import {useEffect} from "react";
 import {useFfmpegDataStore} from "@/store/FFmpegStore";
+import {GitHubLogoIcon} from "@radix-ui/react-icons";
 
 export default function Home() {
     const {setIsFFmpegLoaded, makeFFmpeg, FFmpeg} = useFfmpegDataStore();
@@ -37,7 +38,15 @@ export default function Home() {
     return (
         <div className="absolute w-screen flex h-screen flex-col px-12">
             <div className="flex items-center justify-between rounded-lg border-solid border-b py-2">
-                <h2 className="flex text-lg font-semibold">Video Editor</h2>
+                <a
+                    className={"flex justify-center items-center"}
+                    rel={"noreferrer"}
+                    target={"_blank"}
+                    href="https://github.com/Yug34/video-editor"
+                >
+                    <GitHubLogoIcon className={"mr-2"}/>
+                    Source Code
+                </a>
                 <ModeToggle/>
             </div>
             <Editor/>
