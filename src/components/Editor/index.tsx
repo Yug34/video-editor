@@ -312,12 +312,12 @@ export const Editor = () => {
                         </CardTitle>
 
                         <CardTitle
-                            style={{marginTop: "0px", marginBottom: "16px"}} // className styles weren't working, FIXME!
+                            style={{marginTop: "0px", marginBottom: "16px"}}
                             className={"hidden border-b lg:flex lg:justify-between"}
                         >
                             <div className={"flex"}>
-                                {transformationComponents.map((el) => (
-                                    <React.Fragment key={el.type}>{el.el}</React.Fragment>
+                                {transformationComponents.map(({type, el}) => (
+                                    <React.Fragment key={type}>{el}</React.Fragment>
                                 ))}
                             </div>
                             <Button onClick={transform} className={"rounded-none rounded-tr-md"}>
