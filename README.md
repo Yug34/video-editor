@@ -1,8 +1,5 @@
 # Client-sided video editor
 
-> [!NOTE]
-> Yup, I know. I shouldn't have used NextJS for this project. I just had different plans for this project initially but then it took a different direction. Oh well.
-
 A video editor that lets you edit your videos on the client-side.
 
 Made with `FFmpeg.wasm` and `shadcn/ui`.
@@ -51,6 +48,10 @@ Made with `FFmpeg.wasm` and `shadcn/ui`.
                 }
             }
           ```
+
+# A tiny side note
+
+Yup, I know. I shouldn't have used NextJS for this project. I just had different plans for this project initially but then it took a different direction. Oh well.
 
 # Locally hosting:
 
