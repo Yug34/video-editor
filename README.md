@@ -1,4 +1,4 @@
-# Client-sided video editor
+![539797210_18221938063306137_7512107440128415906_n](https://github.com/user-attachments/assets/246fba49-610c-4e72-b406-ec138f2670dd)# Client-sided video editor
 
 A video editor that lets you edit your videos on the client-side.
 
@@ -52,6 +52,13 @@ Made with `FFmpeg.wasm` and `shadcn/ui`.
 # A tiny side note
 
 Yup, I know. I shouldn't have used NextJS for this project. I just had different plans for this project initially but then it took a different direction. Oh well.
+
+# Previews
+
+[screen-capture (1).webm](https://github.com/user-attachments/assets/f380aa6c-7dfb-406d-b44a-520032d14c0a)
+
+<img width="1916" height="950" alt="image" src="https://github.com/user-attachments/assets/dc83f39f-81b0-44f5-ae69-92dbc49847cf" />
+
 
 # Locally hosting:
 
