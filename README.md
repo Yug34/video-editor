@@ -55,7 +55,7 @@ Yup, I know. I shouldn't have used NextJS for this project. I just had different
 
 # Previews
 
-[screen-capture (1).webm](https://github.com/user-attachments/assets/f380aa6c-7dfb-406d-b44a-520032d14c0a)
+[Preview](https://github.com/user-attachments/assets/bc458cee-8e0f-445b-97a2-9eab286861b6)
 
 <img width="1916" height="950" alt="image" src="https://github.com/user-attachments/assets/dc83f39f-81b0-44f5-ae69-92dbc49847cf" />
 
